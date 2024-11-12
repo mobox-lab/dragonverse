@@ -530,7 +530,7 @@ export class WaveUtil {
                 ModuleService.getModule(PlayerModuleC).onInfinityWaveRefresh();
                 ModuleService.getModule(WaveModuleC).syncAllPassWaves(stageId, this.allPassWaves);
                 ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
-                console.log(`当前波次为第${wave}波，当前刷怪配置:${JSON.stringify(waveInfo)}`);
+                console.log(`current wave: ${wave}, current monster config:${JSON.stringify(waveInfo)}`);
                 return waveInfo;
             }
         } else {

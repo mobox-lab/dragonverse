@@ -169,7 +169,6 @@ export namespace GameManager {
 
             Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
                 const stageState: StageState = JSON.parse(state);
-                console.log(JSON.stringify(stageState), "stageState");
                 if (stageState?.groupIndex) {
                     const index = allGroupIndex.indexOf(stageState?.groupIndex);
                     const guid = allGuid[index];
@@ -486,7 +485,6 @@ export namespace GameManager {
                 mw.SlateVisibility.Hidden
             );
             const cards = stageState.cards;
-            console.log(JSON.stringify(cards), "cards");
             const canvasBuildItem = UIWidget.getTargetUIWidget().rootContent.findChildByPath(
                 "playingCanvas/canvasBuildItem"
             ) as mw.Canvas;
