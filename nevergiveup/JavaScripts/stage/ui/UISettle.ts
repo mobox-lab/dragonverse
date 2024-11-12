@@ -58,7 +58,7 @@ export class UISettle extends SettleUI_Generate {
         let result = settleData.hasWin
             ? GameConfig.Language.getElement("Text_Win").Value
             : GameConfig.Language.getElement("Text_Defeat").Value;
-        this.rewardImg.size = new Vector2(164, 24);
+        this.rewardImg.size = new Vector2(188, 24); // 失败 / 普通通关
         this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[0];
         if (settleData.hasWin) {
             this.mResultTxt.setFontColorByHex("#FFCB1C");
@@ -68,18 +68,14 @@ export class UISettle extends SettleUI_Generate {
             if (settleData.isPerfect) {
                 // result = GameConfig.Language.getElement("Text_Perfect").Value + result;
                 this.showSettleImage(0);
-                this.rewardImg.size = new Vector2(217, 29);
+                this.rewardImg.size = new Vector2(217, 29); // 完美通关
                 this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[1];
                 if (settleData.isFirst) {
-                    this.rewardImg.size = new Vector2(286, 29);
+                    this.rewardImg.size = new Vector2(286, 29); // 首次完美通关
                     this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[2];
                 }
             } else {
                 this.showSettleImage(1);
-            }
-            if (settleData.isFirst) {
-                // result = GameConfig.Language.getElement("Text_First").Value + result;
-                this.rewardImg.imageGuid = "457347";
             }
         } else {
             this.mResultTxt.setFontColorByHex("#FFFFFF");
