@@ -5,7 +5,6 @@ import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import { UIMain } from "../../stage/ui/UIMain";
 
 export class JumpRoomModuleS extends ModuleS<JumpRoomModuleC, null> {
-
     public net_jumpRoom(roomId: string) {
         let player = this.currentPlayer;
         const onFailed = (result: mw.TeleportResult) => {
@@ -16,21 +15,20 @@ export class JumpRoomModuleS extends ModuleS<JumpRoomModuleC, null> {
             }
         };
         Log4Ts.log(JumpRoomModuleS, "onJumpToRoom", this.currentPlayer.userId, roomId);
-        TeleportService.asyncTeleportToRoom(roomId, [this.currentPlayer.userId], null).then(() => {
-        }, onFailed);
-
+        TeleportService.asyncTeleportToRoom(roomId, [this.currentPlayer.userId], null).then(() => {}, onFailed);
     }
 
     protected onPlayerEnterGame(player: mw.Player): void {
+        console.log("onPlayerEnterGame", player.userId);
+
         TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+            console.log("asyncGetPlayerRoomInfo", JSON.stringify(roomInfo), roomInfo.roomId);
             this.getClient(player).net_showRoomId(roomInfo.roomId);
         });
-
     }
 }
 
 export class JumpRoomModuleC extends ModuleC<JumpRoomModuleS, null> {
-
     public net_jumpRoomFailed(msg: string) {
         TipsManager.showTips(GameConfig.Language.JumpGameFailed.Value);
         Log4Ts.log(JumpRoomModuleC, "onJumpRoomFailed", msg);
