@@ -334,11 +334,11 @@ export class Enemy implements BuffBag {
                         (1 - maxSpeedItem.cfg.speed / 100 - (speedBonus + speedBonus2 + speedBonusD) / 100) *
                         speedUpTotal;
                 }
-                console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "生效的减速百分比");
-                console.log("减速后的速度", this.speed);
+                console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "affect slow");
+                console.log("slow speed", this.speed);
             }
         } else {
-            console.log("减速恢复", config.speed);
+            console.log("slow recovery", config.speed);
             if (this.speedActive) {
                 this.speed = config.speed * (1 - speedBonusD / 100) * speedUpTotal;
             } else {
@@ -883,8 +883,6 @@ export class Enemy implements BuffBag {
         } else {
             if (this.go) {
                 let cfg = GameConfig.Monster.getElement(this.configId);
-                console.log(JSON.stringify(cfg), "config monster");
-
                 if (cfg.hurtAnim) {
                     let anim = this.go.loadAnimation(cfg.hurtAnim);
                     anim.loop = 1;

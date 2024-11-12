@@ -303,6 +303,7 @@ export class StageS {
                                         to: this._hp, // 逃跑后血量
                                         enemy: configId, // 逃跑怪物id
                                         round: waveId + 1, // 第几波的怪
+                                        enemyId: enemyId, // 怪物唯一id
                                     });
                                 });
                             } catch (error) {

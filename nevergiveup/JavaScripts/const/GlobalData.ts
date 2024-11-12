@@ -103,8 +103,7 @@ export namespace GlobalData {
                     berserk = true;
                 }
             }
-            console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
-
+            // console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
             return {
                 stealth,
                 fly,
