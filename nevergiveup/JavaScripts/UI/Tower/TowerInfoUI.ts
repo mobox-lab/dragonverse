@@ -322,11 +322,15 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
      */
     private showLevel() {
         if (this._cfg.spend[this._tower.level + 1 + this._upgradeCount] != null) {
+            Gtk.trySetVisibility(this.txt_cost_value, mw.SlateVisibility.Visible);
+            Gtk.trySetVisibility(this.img_money, mw.SlateVisibility.Visible);
             this.txt_cost_value.text = "-" + this._cfg.spend[this._tower.level + 1 + this._upgradeCount].toFixed();
             this.canvas_levelup_inner_left.visibility = SlateVisibility.SelfHitTestInvisible;
             this.txt_cost.text = GameConfig.Language.getElement("Text_Upgrade").Value;
             this.levelBtn.enable = true;
         } else {
+            Gtk.trySetVisibility(this.txt_cost_value, mw.SlateVisibility.Collapsed);
+            Gtk.trySetVisibility(this.img_money, mw.SlateVisibility.Collapsed);
             this.txt_cost_value.text = "0";
             this.canvas_levelup_inner_left.visibility = SlateVisibility.Collapsed;
             this.txt_cost.text = GameConfig.Language.getElement("Text_MaxLevel").Value;

@@ -29,6 +29,13 @@ export default class TowerItemUI_Generate extends UIScript {
 		}
 		return this.hoverNameTxt_Internal
 	}
+	private hoverBGImg_Internal: mw.Image
+	public get hoverBGImg(): mw.Image {
+		if(!this.hoverBGImg_Internal&&this.uiWidgetBase) {
+			this.hoverBGImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_hover/hoverBGImg') as mw.Image
+		}
+		return this.hoverBGImg_Internal
+	}
 	private itemBtn_Internal: mw.Button
 	public get itemBtn(): mw.Button {
 		if(!this.itemBtn_Internal&&this.uiWidgetBase) {
