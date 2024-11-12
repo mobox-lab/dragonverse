@@ -290,8 +290,6 @@ export class StageS {
                             this.onCountChanged();
                             this._hp -= damage;
                             try {
-                                console.log("escape monster");
-
                                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                                     Utils.logP12Info("A_Escape", {
                                         timestamp: Date.now(),
