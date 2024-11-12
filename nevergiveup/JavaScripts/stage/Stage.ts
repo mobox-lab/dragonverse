@@ -290,6 +290,8 @@ export class StageS {
                             this.onCountChanged();
                             this._hp -= damage;
                             try {
+                                console.log("escape monster");
+
                                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                                     Utils.logP12Info("A_Escape", {
                                         timestamp: Date.now(),
@@ -303,6 +305,7 @@ export class StageS {
                                         to: this._hp, // 逃跑后血量
                                         enemy: configId, // 逃跑怪物id
                                         round: waveId + 1, // 第几波的怪
+                                        enemyId: enemyId, // 怪物唯一id
                                     });
                                 });
                             } catch (error) {
