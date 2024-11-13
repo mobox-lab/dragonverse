@@ -31,6 +31,7 @@ import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
 import BuildItemUI from "./UI/BuildItemUI";
 import { GlobalData } from "./const/GlobalData";
 import { TowerModuleC } from "./Modules/TowerModule/TowerModuleC";
+import { DragonDataModuleS } from "./Modules/dragonData/DragonDataModuleS";
 
 export const ChatType = {
     Text: 1,
@@ -115,6 +116,7 @@ export namespace GameManager {
                 players.push(player);
                 allPlayers.push(player);
                 player.character.collisionWithOtherCharacterEnabled = false;
+                ModuleService.getModule(DragonDataModuleS).initData([player]);
             });
 
             // Player.onPlayerLeave.add((player) => {
