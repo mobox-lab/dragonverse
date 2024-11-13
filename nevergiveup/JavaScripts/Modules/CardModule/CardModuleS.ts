@@ -30,8 +30,8 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
         const player = this.currentPlayer;
         console.log("#debug server net_sellCard:", cardID);
         try {
-            if (!data.unlockCards.includes(cardID))
-                return false; // 未解锁卡牌不能卖
+            if (!data.unlockCards.includes(cardID) || data.unlockCards.length === 1)
+                return false; // 未解锁卡牌、只剩最后一张卡牌不能卖
             if (data.equipCards.includes(cardID)) data.equipCards = data.equipCards.filter((id) => id !== cardID);
             // 给金币
             const config = GameConfig.Tower.getElement(cardID);
