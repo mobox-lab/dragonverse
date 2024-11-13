@@ -145,7 +145,7 @@ export class StageS {
         this.currentSkippingPlayers = [];
         this.registerListeners();
         // this.updateRankItems();
-        ModuleService.getModule(DragonDataModuleS).initData(players);
+        // ModuleService.getModule(DragonDataModuleS).initData(players);
 
         const player = players[0];
         if (!player?.userId) return;
@@ -180,6 +180,7 @@ export class StageS {
             const userHP2 = TalentUtils.getModuleSRunesValueById(1027, player);
             const userHPD = TalentUtils.getModuleSRunesValueById(2005, player);
             const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, player);
+            console.log("userHPD", userHPD);
             this._hp = Math.floor(bh + userHP + userHP2 + userHPD + userHPInfinite);
             this._maxHp = this._hp;
             this.boardcast((player) => {

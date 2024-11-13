@@ -25,7 +25,7 @@ export class DragonDataModuleS extends JModuleS<DragonDataModuleC, DragonDataMod
     }
 
     public getDragonData(player: Player) {
-        console.log("getDragonData:", this.dragonDataMap.get(player.playerId.toString()));
+        console.log("getDragonData:", JSON.stringify(this.dragonDataMap.get(player.playerId.toString())));
         return this.dragonDataMap.get(player.playerId.toString());
     }
     public getDragonBlessData(player: Player) {
