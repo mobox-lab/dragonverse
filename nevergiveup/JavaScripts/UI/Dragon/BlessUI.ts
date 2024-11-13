@@ -61,6 +61,7 @@ export default class BlessUI extends BlessMain_Generate {
         const categoryIds = Object.values(DragonElemental).filter((v) => Number(v) >= 0).map((v) => Number(v) as DragonElemental);
         this._scrollViews = categoryIds.map((cid) => {
             const dragonHandbookYoact = this._dragonDataModule.dragonBlessListYoactArr[cid - 1];
+            if(!dragonHandbookYoact) return null;
             Log4Ts.log(BlessUI, " initBlessUI cid:" + cid + " this._dragonDataModule.dragonBlessListYoactArr[cid-1]" + JSON.stringify(dragonHandbookYoact.getAll()));
             const {scrollBox, container, bar} = this.getCidEle(cid);
             bindYoact(() => {
