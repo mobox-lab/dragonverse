@@ -179,7 +179,7 @@ export class StageS {
             const userHP = TalentUtils.getModuleSRunesValueById(1003, player);
             const userHP2 = TalentUtils.getModuleSRunesValueById(1027, player);
             const userHPD = TalentUtils.getModuleSRunesValueById(2005, player);
-            const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, player);
+            const userHPInfinite = this.stageCfgId === 6001 ? TalentUtils.getModuleSRunesValueById(1049, player) : 0;
             console.log("userHPD", userHPD);
             this._hp = Math.floor(bh + userHP + userHP2 + userHPD + userHPInfinite);
             this._maxHp = this._hp;
