@@ -116,7 +116,6 @@ export namespace GameManager {
                 players.push(player);
                 allPlayers.push(player);
                 player.character.collisionWithOtherCharacterEnabled = false;
-                ModuleService.getModule(DragonDataModuleS).initData([player]);
             });
 
             // Player.onPlayerLeave.add((player) => {
@@ -315,14 +314,17 @@ export namespace GameManager {
         for (let i = 0; i < allPlayers.length; i++) {
             Event.dispatchToClient(allPlayers[i], GlobalEventName.ServerStageState, JSON.stringify(stageState));
         }
-
-        startStage(validGamePlayers, stageCfgId);
-        for (let i = 0; i < players.length; i++) {
-            if (validGamePlayers.indexOf(players[i]) != -1) {
-                players.splice(i, 1);
-                i--;
-            }
-        }
+        ModuleService.getModule(DragonDataModuleS)
+            .initData(validGamePlayers)
+            .then(() => {
+                startStage(validGamePlayers, stageCfgId);
+                for (let i = 0; i < players.length; i++) {
+                    if (validGamePlayers.indexOf(players[i]) != -1) {
+                        players.splice(i, 1);
+                        i--;
+                    }
+                }
+            });
     }
     export function getScript(): GameStart {
         return script;
