@@ -54,23 +54,23 @@ export default class TalentUtils {
         if (dragonData && Array.isArray(dragonData?.DragonPalList)) {
             let dragons = [];
             if (id === 2001) {
-                // 火龙娘
-                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 40 && d.dragonPalId < 50);
-            } else if (id === 2002) {
-                // 水龙娘
-                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 30 && d.dragonPalId < 40);
-            } else if (id === 2003) {
-                // 土龙娘
-                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 60 && d.dragonPalId < 70);
-            } else if (id === 2004) {
-                // 木龙娘
-                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 50 && d.dragonPalId < 60);
-            } else if (id === 2005) {
-                // 光龙娘
+                //  光龙娘
                 dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 10 && d.dragonPalId < 20);
-            } else if (id === 2006) {
+            } else if (id === 2002) {
                 // 暗龙娘
                 dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 20 && d.dragonPalId < 30);
+            } else if (id === 2003) {
+                // 水龙娘
+                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 30 && d.dragonPalId < 40);
+            } else if (id === 2004) {
+                //  火龙娘
+                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 40 && d.dragonPalId < 50);
+            } else if (id === 2005) {
+                // 木龙娘
+                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 50 && d.dragonPalId < 60);
+            } else if (id === 2006) {
+                // 土龙娘
+                dragons = dragonData.DragonPalList.filter((d) => d.dragonPalId > 60 && d.dragonPalId < 70);
             } else {
                 return index;
             }
