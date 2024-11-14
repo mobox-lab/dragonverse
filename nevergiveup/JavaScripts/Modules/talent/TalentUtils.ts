@@ -43,9 +43,9 @@ export default class TalentUtils {
 
     public static getDragonIndex(id: number): number {
         const dragonData = ModuleService.getModule(DragonDataModuleC).dragonData;
-        console.log("getDragonIndex C", JSON.stringify(dragonData));
+        // console.log("getDragonIndex C", JSON.stringify(dragonData));
         const index = this.getDragonIndexByData(dragonData, id);
-        console.log("getDragonIndex C 2", id, index);
+        // console.log("getDragonIndex C 2", id, index);
         return index;
     }
 
@@ -77,7 +77,7 @@ export default class TalentUtils {
 
             const ids = dragons.map((item) => item.dragonPalId);
             const uniqueIds = [...new Set(ids)];
-            if (uniqueIds.length >= 6) {
+            if (uniqueIds.length >= 7) {
                 index = 3;
             } else if (uniqueIds.length >= 3) {
                 index = 2;

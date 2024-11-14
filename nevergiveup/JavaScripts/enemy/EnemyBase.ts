@@ -214,7 +214,7 @@ export class Enemy implements BuffBag {
 
     applyBuff(buff: number) {
         const addBuffRes = this.buffManager.addBuff(buff);
-        console.log(buff, addBuffRes, "addBuff");
+        // console.log(buff, addBuffRes, "addBuff");
 
         if (addBuffRes) {
             this.updateAttributes();
@@ -334,11 +334,11 @@ export class Enemy implements BuffBag {
                         (1 - maxSpeedItem.cfg.speed / 100 - (speedBonus + speedBonus2 + speedBonusD) / 100) *
                         speedUpTotal;
                 }
-                console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "affect slow");
-                console.log("slow speed", this.speed);
+                // console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "affect slow");
+                // console.log("slow speed", this.speed);
             }
         } else {
-            console.log("slow recovery", config.speed);
+            // console.log("slow recovery", config.speed);
             if (this.speedActive) {
                 this.speed = config.speed * (1 - speedBonusD / 100) * speedUpTotal;
             } else {
@@ -728,7 +728,7 @@ export class Enemy implements BuffBag {
 
         // 基础伤害
         let damage = tower.attackDamage;
-        console.log(damage, "damage");
+        // console.log(damage, "damage");
         // 判断伤害的类型，根据tower的类型来判断
         const damageType = tower.cfg.adap;
         if (damageType === DamageType.ARMOR) {
@@ -739,14 +739,14 @@ export class Enemy implements BuffBag {
             const adBonusD = TalentUtils.getModuleCRunesValueById(2001);
             const adBonusInfinite = TalentUtils.getModuleCRunesValueById(1047);
             damage = damage * (1 + (adBonus + adBonus2 + adBonusD + adBonusInfinite) / 100);
-            console.log(
-                adBonus,
-                adBonus2,
-                adBonusD,
-                adBonusInfinite,
-                damage,
-                "adBonus,adBonus2,adBonusD,adBonusInfinite,damage"
-            );
+            // console.log(
+            //     adBonus,
+            //     adBonus2,
+            //     adBonusD,
+            //     adBonusInfinite,
+            //     damage,
+            //     "adBonus,adBonus2,adBonusD,adBonusInfinite,damage"
+            // );
         } else if (damageType === DamageType.MAGIC) {
             // 天赋树的魔法攻击加成
             // 龙娘祝福
@@ -755,14 +755,14 @@ export class Enemy implements BuffBag {
             const apBonusD = TalentUtils.getModuleCRunesValueById(2002);
             const apBonusInfinite = TalentUtils.getModuleCRunesValueById(1048);
             damage = damage * (1 + (apBonus + apBonus2 + apBonusD + apBonusInfinite) / 100);
-            console.log(
-                apBonus,
-                apBonus2,
-                apBonusD,
-                apBonusInfinite,
-                damage,
-                "apBonus,apBonus2,apBonusD,apBonusInfinite,damage"
-            );
+            // console.log(
+            //     apBonus,
+            //     apBonus2,
+            //     apBonusD,
+            //     apBonusInfinite,
+            //     damage,
+            //     "apBonus,apBonus2,apBonusD,apBonusInfinite,damage"
+            // );
         }
 
         // 固定增伤
@@ -791,18 +791,18 @@ export class Enemy implements BuffBag {
         const fixedDamage = attackFixDamage >= attackDamagePercentValue ? attackFixDamage : attackDamagePercentValue;
         // P1 伤害
         const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + fixedDamage;
-        console.log(
-            flyingBonus,
-            flyingBonus2,
-            attackFixDamage,
-            attackDamagePercentValue,
-            P1Damage,
-            "flyingBonus,flyingBonus2,attackFixDamage,attackDamagePercentValue,P1Damage"
-        );
+        // console.log(
+        //     flyingBonus,
+        //     flyingBonus2,
+        //     attackFixDamage,
+        //     attackDamagePercentValue,
+        //     P1Damage,
+        //     "flyingBonus,flyingBonus2,attackFixDamage,attackDamagePercentValue,P1Damage"
+        // );
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
-        console.log(P2Percent, P2Damage, "P2Percent, P2Damage");
+        // console.log(P2Percent, P2Damage, "P2Percent, P2Damage");
         // P3 伤害
         // 天赋树的物理斩杀和魔法压制
         const adExecute = TalentUtils.getModuleCRunesValueById(1017);
@@ -817,14 +817,14 @@ export class Enemy implements BuffBag {
             if (this.hp < this.hpMax * 0.2) {
                 // 物理对于血量低于20%造成x%额外伤害
                 P3Damage = P3Damage * (1 + (adExecute + adExecute2) / 100);
-                console.log(adExecute, adExecute2, P3Damage, "adExecute, adExecute2, P3Damage");
+                // console.log(adExecute, adExecute2, P3Damage, "adExecute, adExecute2, P3Damage");
             }
         } else if (damageType === DamageType.MAGIC) {
             P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
             if (this.hp > this.hpMax * 0.8) {
                 // 魔法对于血量高于80%造成x%额外伤害
                 P3Damage = P3Damage * (1 + (apExecute + apExecute2) / 100);
-                console.log(apExecute, apExecute2, P3Damage, "apExecute, apExecute2, P3Damage");
+                // console.log(apExecute, apExecute2, P3Damage, "apExecute, apExecute2, P3Damage");
             }
         } else {
             P3Damage = 0;
@@ -837,16 +837,16 @@ export class Enemy implements BuffBag {
         const damageBonus4 = TalentUtils.getModuleCRunesValueById(1046);
 
         P3Damage = P3Damage * (1 + (damageBonus + damageBonus2 + damageBonus3 + damageBonus4) / 100);
-        console.log(
-            damageBonus,
-            damageBonus2,
-            damageBonus3,
-            damageBonus4,
-            P3Damage,
-            "damageBonus, damageBonus2, damageBonus3, damageBonus4, P3Damage"
-        );
+        // console.log(
+        //     damageBonus,
+        //     damageBonus2,
+        //     damageBonus3,
+        //     damageBonus4,
+        //     P3Damage,
+        //     "damageBonus, damageBonus2, damageBonus3, damageBonus4, P3Damage"
+        // );
         const finalDamage = Math.min(P3Damage, this.hp);
-        console.log(finalDamage, "finalDamage");
+        // console.log(finalDamage, "finalDamage");
         this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
