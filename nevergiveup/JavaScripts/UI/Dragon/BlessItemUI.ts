@@ -12,13 +12,14 @@ export default class BlessItemUI extends BlessItem_Generate implements IScrollVi
     //#region IScrollViewItem
     bindData(data: DragonBlessListUnique): void {
         bindYoact(() => {
-            this.canvas_inner.renderOpacity = data.cnt ? 1 : 0.4;
-            const cfgId = 2001 + (data?.categoryId ?? 0);
+            this.canvas_inner.renderOpacity = data?.cnt ? 1 : 0.4;
+            const cfgId = this.getDragonBuffCfgIdByCid(data?.categoryId);
+            if(!cfgId) return;
             const buffArr = GameConfig.TalentBuff.getElement(cfgId)?.value;
             const isPercent = cfgId != 2005;
-            console.log('#debug bless BlessItemUI bindData', {data,cfgId, buffArr, isPercent});
+            // console.log('#debug bless BlessItemUI bindData', {data,cfgId, buffArr, isPercent});
             if(buffArr?.length < 3) return;
-            switch (data.index) {
+            switch (data?.index ?? 0) {
                 case 0: {
                     Gtk.trySetVisibility(this.txt_Percent, mw.SlateVisibility.Visible);
                     Gtk.trySetText(this.txt_Percent,  `${buffArr?.[0]}${isPercent ? '%': ''}`);
@@ -50,6 +51,17 @@ export default class BlessItemUI extends BlessItem_Generate implements IScrollVi
         this.img_Corner.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(dragon?.tdElemetType || 1) - 1];
     }
 
+    getDragonBuffCfgIdByCid(cid: DragonElemental) {
+        switch (cid) {
+            case DragonElemental.Light: return 2001;
+            case DragonElemental.Dark: return 2002;
+            case DragonElemental.Water: return 2003;
+            case DragonElemental.Fire: return 2004;
+            case DragonElemental.Wood: return 2005;
+            case DragonElemental.Earth: return 2006;
+            default: return null;
+        }
+    }
     get clickObj(): mw.StaleButton {
         return null;
     }
