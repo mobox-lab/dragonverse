@@ -77,7 +77,7 @@ export default class TalentUtils {
 
             const ids = dragons.map((item) => item.dragonPalId);
             const uniqueIds = [...new Set(ids)];
-            if (uniqueIds.length >= 6) {
+            if (uniqueIds.length >= 7) {
                 index = 3;
             } else if (uniqueIds.length >= 3) {
                 index = 2;
