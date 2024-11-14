@@ -283,6 +283,8 @@ export class StageS {
                         let damage = damages[i];
                         let configId = configIds[i];
                         this.escapeInfo.push({ wave: waveId, id: enemyId, type: configId });
+                        const from = this._hp + 0;
+                        const to = this._hp - damage;
                         if (this._deadIds.indexOf(enemyId) == -1) {
                             this._deadIds.push(enemyId);
                             if (this._tempEscapeIds.indexOf(enemyId) == -1) {
@@ -290,6 +292,7 @@ export class StageS {
                             }
                             this.onCountChanged();
                             this._hp -= damage;
+
                             try {
                                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                                     Utils.logP12Info("A_Escape", {
@@ -300,8 +303,8 @@ export class StageS {
                                         level: this.stageCfg?.NameCN,
                                         movespeed: this.speedMultipler,
                                         total: this._maxHp, //base血量上限
-                                        from: this._hp + damage, // 逃跑前血量
-                                        to: this._hp, // 逃跑后血量
+                                        from: from, // 逃跑前血量
+                                        to: to, // 逃跑后血量
                                         enemy: configId, // 逃跑怪物id
                                         round: waveId + 1, // 第几波的怪
                                         enemyId: enemyId, // 怪物唯一id

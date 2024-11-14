@@ -316,7 +316,8 @@ export namespace GameManager {
         }
         ModuleService.getModule(DragonDataModuleS)
             .initData(validGamePlayers)
-            .then(() => {
+            .then(() => {})
+            .finally(() => {
                 startStage(validGamePlayers, stageCfgId);
                 for (let i = 0; i < players.length; i++) {
                     if (validGamePlayers.indexOf(players[i]) != -1) {
