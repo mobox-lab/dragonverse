@@ -10,7 +10,7 @@
 import { GameManager } from "../GameManager";
 import { EnergyModuleS } from "../Modules/Energy/EnergyModule";
 import { TweenCommon } from "../TweenCommon";
-import CommonTipsManagerUI from "../UI/Tips/CommonTipsManagerUI";
+import CommonTipsManagerUI, { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import GameServiceConfig from "../const/GameServiceConfig";
@@ -100,8 +100,15 @@ export default class StageTrigger extends Script {
             let trigger = this.gameObject as Trigger;
             trigger.onEnter.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
-                    if (Utils.isLocalPlayer(gameObject?.player?.playerId)) {
+                    if (Utils.isLocalPlayer(gameObject?.player?.playerId) && this.owner === 0) {
                         this.onTrigger();
+                    } else {
+                        if (
+                            Player.localPlayer.playerId === gameObject?.player?.playerId &&
+                            this.owner !== gameObject?.player?.playerId
+                        ) {
+                            TipsManager.showTips(GameConfig.Language.getElement("Text_stageAlreadyUsed").Value);
+                        }
                     }
                 }
             });
