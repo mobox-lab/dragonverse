@@ -943,6 +943,7 @@ export class StageC {
                 );
             }
             Player.asyncGetLocalPlayer().then((player: Player) => {
+                console.log("reset position, MapManager.birthPosition");
                 player.character.worldTransform.position = MapManager.birthPosition.clone().add(new Vector(0, 0, 100));
                 player.character.worldTransform.rotation = MapManager.birthRotation.clone();
                 let point = MapManager.getRoadPositions(0);

@@ -392,8 +392,10 @@ export namespace GameManager {
         Player.asyncGetLocalPlayer().then((player) => {
             const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
             if (stageCfg.resetPosition) {
+                console.log("reset position, backToLobby stageCfg.resetPosition");
                 player.character.worldTransform.position = stageCfg?.resetPosition.clone();
             } else {
+                console.log("reset position, backToLobby Global");
                 player.character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
             }
         });
