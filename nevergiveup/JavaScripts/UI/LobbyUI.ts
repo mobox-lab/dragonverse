@@ -166,6 +166,7 @@ export default class LobbyUI extends LobbyUI_Generate {
         UIService.hide(JumpProgress_Generate);
         const character = Player.localPlayer.character;
         if (!character) return;
+        console.log("reset position, onProgressDone");
         character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
     }
 
