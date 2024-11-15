@@ -43,7 +43,7 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         this.energyC.refreshStaminaLimit();
         // 注册快捷键
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => UIService.hideUI(this));
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.E, () => this.useSenzuBean());
+        // KeyOperationManager.getInstance().onKeyUp(this, Keys.E, () => this.useSenzuBean());
     }
 
     protected onHide() {
@@ -53,7 +53,7 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         Gtk.trySetVisibility(this.btn_UnConfirm_Use, true);
         // 清除快捷键
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-        KeyOperationManager.getInstance().unregisterKey(this, Keys.E);
+        // KeyOperationManager.getInstance().unregisterKey(this, Keys.E);
     }
 
     /**
