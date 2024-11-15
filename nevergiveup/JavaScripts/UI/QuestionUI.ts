@@ -33,6 +33,7 @@ export default class QuestionUI extends QuestionUI_Generate {
             });
         });
         this.btn_Confirm_Use.onClicked.add(() => {
+            StringUtil.clipboardCopy("https://mobox.gitbook.io/dragon-defense-guidebook/");
             this.onConfirm?.();
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
