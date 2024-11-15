@@ -91,6 +91,8 @@ export class UIStageSelect extends StageSelect_Generate {
     public selectedMonsterSkillIndex: number = 0;
     public monsterSkillTypes: StageMonsterSkillType[] = [];
     public isShowCounterInfo: boolean = false;
+    public leaveCountDown: number = 10;
+    public leaveCountTimerId: number = 0;
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -101,6 +103,7 @@ export class UIStageSelect extends StageSelect_Generate {
         }
 
         this.mGo.onClicked.add(() => {
+            this.resetLeaveGameCountDown();
             this._script.changeOwnerByClick(Player.localPlayer.playerId);
             setTimeout(() => {
                 if (Utils.isLocalPlayer(this._ownerId)) {
@@ -118,17 +121,9 @@ export class UIStageSelect extends StageSelect_Generate {
             }, 1000);
         });
 
-        this.mClose.onClicked.add(() => {
-            if (Utils.isLocalPlayer(this._ownerId)) {
-                this._script.clickLeaveBtn(Player.localPlayer.playerId);
-            }
-        });
+        this.mClose.onClicked.add(this.leaveGame.bind(this));
 
-        this.mOff.onClicked.add(() => {
-            if (Utils.isLocalPlayer(this._ownerId)) {
-                this._script.clickLeaveBtn(Player.localPlayer.playerId);
-            }
-        });
+        this.mOff.onClicked.add(this.leaveGame.bind(this));
 
         this.counterInfoBtn.onHovered.add(() => {
             this.setCounterInfoShow(true);
@@ -139,6 +134,32 @@ export class UIStageSelect extends StageSelect_Generate {
         this.counterInfoBtn.onUnhovered.add(() => {
             this.setCounterInfoShow(false);
         });
+    }
+
+    // 从打开的时候就开始倒计时10s，倒计时结束自动执行这个
+    leaveGame() {
+        if (Utils.isLocalPlayer(this._ownerId)) {
+            this._script.clickLeaveBtn(Player.localPlayer.playerId);
+        }
+    }
+    updateLeaveGameCountDown(cnt: number) {
+        this.leaveCountDown = cnt;
+        this.mClose.text = GameConfig.Language.UI_43.Value + `（${this.leaveCountDown}s）`;
+        if (this.leaveCountDown <= 0) {
+            this.leaveGame();
+            this.resetLeaveGameCountDown();
+            this.hide();
+        }
+    }
+    resetLeaveGameCountDown() {
+        this.updateLeaveGameCountDown(10);
+        if (this.leaveCountTimerId) mw.clearInterval(this.leaveCountTimerId);
+    }
+    startLeaveGameCountDown() {
+        this.resetLeaveGameCountDown();
+        this.leaveCountTimerId = mw.setInterval(() => {
+            this.updateLeaveGameCountDown(this.leaveCountDown - 1);
+        }, 1000);
     }
 
     setPerfectImg(stageCfgId: number) {
@@ -421,11 +442,13 @@ export class UIStageSelect extends StageSelect_Generate {
         } else {
             this.setDifficulty();
         }
+        this.startLeaveGameCountDown();
         TweenCommon.popUpShow(this.rootCanvas);
     }
 
     onHide() {
         this.setCounterInfoShow(false);
+        this.resetLeaveGameCountDown();
     }
 
     getRecommendElement(id: number, index: number) {
