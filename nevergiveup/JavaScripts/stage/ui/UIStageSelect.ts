@@ -127,8 +127,11 @@ export class UIStageSelect extends StageSelect_Generate {
 
         this.counterInfoBtn.onHovered.add(() => {
             this.setCounterInfoShow(true);
-            if(this.textElement?.size?.x)
-                this.canvasElementCounter.position = new Vector2(this.mContainer.position.x + 40 + this.counterInfoBtn.position.x - 98 + 12, 322);
+            if (this.textElement?.size?.x)
+                this.canvasElementCounter.position = new Vector2(
+                    this.mContainer.position.x + 40 + this.counterInfoBtn.position.x - 98 + 12,
+                    322
+                );
         });
 
         this.counterInfoBtn.onUnhovered.add(() => {
@@ -146,7 +149,9 @@ export class UIStageSelect extends StageSelect_Generate {
         this.leaveCountDown = cnt;
         this.mClose.text = GameConfig.Language.UI_43.Value + `（${this.leaveCountDown}s）`;
         if (this.leaveCountDown <= 0) {
-            this.leaveGame();
+            if (Utils.isLocalPlayer(this._ownerId)) {
+                this._script.resetUserPosition(Player.localPlayer);
+            }
             this.resetLeaveGameCountDown();
             this.hide();
         }
@@ -427,7 +432,10 @@ export class UIStageSelect extends StageSelect_Generate {
 
     setCounterInfoShow(isShow: boolean) {
         this.isShowCounterInfo = isShow;
-        Gtk.trySetVisibility(this.canvasElementCounter, isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(
+            this.canvasElementCounter,
+            isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed
+        );
     }
 
     onShow(script: StageTrigger) {
