@@ -626,7 +626,9 @@ export class StageS {
             }
         } else {
             // 失败
-            rewards = stageConfig.failReward;
+            if (!Utils.isInfiniteMode(stageConfig.groupIndex)) {
+                rewards = stageConfig.failReward;
+            }
             settleLogs.type = 1;
         }
         settleLogs.rewards = rewards;
@@ -650,37 +652,38 @@ export class StageS {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
         }
         this.settleData.reward = [];
-        for (let i = 0; i < rewards.length; i++) {
-            let [id, amount] = rewards[i];
-            let item = GameConfig.Item.getElement(id);
-            if (item.itemType == 1) {
-                // 金币
-                this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
-                ModuleService.getModule(PlayerModuleS).changeGold(player, amount);
-            } else if (item.itemType == 2) {
-                // 卡牌
-                let card = GameConfig.Tower.getElement(item.itemTypeid);
-                this.settleData.reward.push({ guid: card.iconGuid, amount: amount, type: item.itemType });
-                // 实际添加卡牌
-                // 判断卡牌是否已经存在
-                const cards = ModuleService.getModule(CardModuleS).getPlayerUnlockCards(player) || [];
-                if (cards.includes(card.id)) {
-                    // 已经存在，给钱
-                    ModuleService.getModule(PlayerModuleS).changeGold(player, 1000);
-                } else {
-                    ModuleService.getModule(CardModuleS).giveCard(player, card.id);
-                }
-            } else if (item.itemType == 3) {
-                // 科技点
-                this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
-                ModuleService.getModule(PlayerModuleS).changeTechPoint(player, amount);
-            } else if (item.itemType == 4) {
-                // 经验
-                this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
-                ModuleService.getModule(PlayerModuleS).changeExp(player, amount);
-            }
-        }
+
         if (!Utils.isInfiniteMode(stageConfig.groupIndex)) {
+            for (let i = 0; i < rewards.length; i++) {
+                let [id, amount] = rewards[i];
+                let item = GameConfig.Item.getElement(id);
+                if (item.itemType == 1) {
+                    // 金币
+                    this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeGold(player, amount);
+                } else if (item.itemType == 2) {
+                    // 卡牌
+                    let card = GameConfig.Tower.getElement(item.itemTypeid);
+                    this.settleData.reward.push({ guid: card.iconGuid, amount: amount, type: item.itemType });
+                    // 实际添加卡牌
+                    // 判断卡牌是否已经存在
+                    const cards = ModuleService.getModule(CardModuleS).getPlayerUnlockCards(player) || [];
+                    if (cards.includes(card.id)) {
+                        // 已经存在，给钱
+                        ModuleService.getModule(PlayerModuleS).changeGold(player, 1000);
+                    } else {
+                        ModuleService.getModule(CardModuleS).giveCard(player, card.id);
+                    }
+                } else if (item.itemType == 3) {
+                    // 科技点
+                    this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeTechPoint(player, amount);
+                } else if (item.itemType == 4) {
+                    // 经验
+                    this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeExp(player, amount);
+                }
+            }
             if (!this.settleData.hasWin) {
                 // 返还体力
                 this.settleData.reward.push({
