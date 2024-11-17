@@ -172,6 +172,17 @@ export default class StageTrigger extends Script {
         }
     }
 
+    resetUserPosition(player: Player) {
+        this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+            this.stageWorldIndex,
+            this.stageGroupId,
+            this.difficulty
+        );
+        const stageCfg = GameConfig.Stage.getElement(this.stageCfgId);
+
+        player.character.worldTransform.position = stageCfg?.resetPosition.clone();
+    }
+
     @mw.RemoteFunction(mw.Server)
     changeOwnerByClick(owner: number) {
         this.owner = owner;
