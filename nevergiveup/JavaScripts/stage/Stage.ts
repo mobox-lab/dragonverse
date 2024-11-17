@@ -882,7 +882,7 @@ export class StageC {
             });
         Enemy.count = 0;
 
-        UIService.show(LogoAnimUI, { framesPerSecond: 6 });
+        UIService.show(LogoAnimUI);
         // UIService.show(CutsceneUI, () => {
         setTimeout(() => {
             Player.asyncGetLocalPlayer().then((player: Player) => {
