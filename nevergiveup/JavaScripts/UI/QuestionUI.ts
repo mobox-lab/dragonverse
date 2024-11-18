@@ -4,6 +4,8 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import { GameManager } from "../GameManager";
+import GameStart from "../GameStart";
 import { CardState } from "../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../TweenCommon";
 import { GameConfig } from "../config/GameConfig";
@@ -33,7 +35,13 @@ export default class QuestionUI extends QuestionUI_Generate {
             });
         });
         this.btn_Confirm_Use.onClicked.add(() => {
-            StringUtil.clipboardCopy("https://mobox.gitbook.io/dragon-defense-guidebook/");
+            if (GameManager.getScript().getLanguageId() === 1) {
+                StringUtil.clipboardCopy(
+                    "https://mobox.gitbook.io/cn-long-yu-bao-wei-zhan-ru-men-shou-ce-dragon-defense"
+                );
+            } else {
+                StringUtil.clipboardCopy("https://mobox.gitbook.io/dragon-defense-guidebook/");
+            }
             this.onConfirm?.();
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
@@ -72,13 +80,17 @@ export default class QuestionUI extends QuestionUI_Generate {
     /**
      * 设置显示时触发
      */
-    protected onShow(options?: {text?: string, onConfirm: () => void, onCancel: () => void}) {
-        const {text, onConfirm, onCancel} = options ?? {}; 
+    protected onShow(options?: { text?: string; onConfirm: () => void; onCancel: () => void }) {
+        const { text, onConfirm, onCancel } = options ?? {};
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
         this.text_Recovery.text = text ?? GameConfig.Language.QuestionText_1.Value;
-        this.text_Confirm_Use.text = onConfirm ? GameConfig.Language.Return_text_2.Value : GameConfig.Language.QuestionText_2.Value;
-        this.text_UnConfirm_Use.text = onConfirm ? GameConfig.Language.Return_text_3.Value : GameConfig.Language.QuestionText_3.Value;
+        this.text_Confirm_Use.text = onConfirm
+            ? GameConfig.Language.Return_text_2.Value
+            : GameConfig.Language.QuestionText_2.Value;
+        this.text_UnConfirm_Use.text = onConfirm
+            ? GameConfig.Language.Return_text_3.Value
+            : GameConfig.Language.QuestionText_3.Value;
         TweenCommon.popUpShow(this.rootCanvas);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             TweenCommon.popUpHide(this.rootCanvas, () => {

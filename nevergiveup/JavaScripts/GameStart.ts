@@ -82,7 +82,7 @@ export default class GameStart extends Script {
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "主网链", group: "发布", selectOptions: Chains})
+    @mw.Property({ displayName: "主网链", group: "发布", selectOptions: Chains })
     public customChainId: ChainId = Chains.Merlin;
 
     @mw.Property({ displayName: "是否开启gm（勾选开启）", group: "测试" })
@@ -163,7 +163,7 @@ export default class GameStart extends Script {
         SoundUtil.init();
         // SoundUtil.playBGM();
         Reward.init();
-        UIService.show(LogoAnimUI)
+        UIService.show(LogoAnimUI);
     }
 
     /**
@@ -235,5 +235,9 @@ export default class GameStart extends Script {
             Event.dispatchToLocal(`LanguageInit`);
             console.error("初始化多语言.....");
         }
+    }
+
+    public getLanguageId() {
+        return Number(this.selectedIndex);
     }
 }
