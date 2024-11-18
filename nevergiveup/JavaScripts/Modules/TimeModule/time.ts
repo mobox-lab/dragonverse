@@ -245,7 +245,7 @@ export namespace TimerModuleUtils {
      * @param newTime 新的时间
      * @returns 是否是新的一天
      */
-    export function judgeIsNewDay(oldTime: number, newTime: number, utcHour = 10): boolean {
+    export function judgeIsNewDay(oldTime: number, newTime: number, utcHour = 8): boolean {
         // if (!oldTime || !newTime) return false;
 
         // // oldTime 和 newTime 都为 UTC 时间戳
