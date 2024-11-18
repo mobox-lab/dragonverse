@@ -32,8 +32,11 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 	/**
 	 * 清空某个玩家的已完成的日常任务
 	 */
-	public net_clearFinishDailyTaskByPlayer() {
-		this.clearFinishDailyTaskByPlayer(this.currentPlayer);
+	public net_clearTaskTodayIfNewDay() {
+		// this.clearFinishDailyTaskByPlayer(this.currentPlayer);
+        const data = this.currentData;
+        if(!data) return false;
+        data.clearTaskTodayIfNewDay();
 	}
 
 	private clearFinishDailyTaskByPlayer(player: Player) {
@@ -50,9 +53,11 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 	 */
 	public net_finishTask(taskId: number): boolean {
 		const userId = this.currentPlayer?.userId ?? '';
+		const data = this.currentData;
 		try {
-			if (!this.currentData.finishTasks.includes(taskId)) {
-				this.currentData.finishTasks.push(taskId);
+			if(!data) return false;
+			if (!data.finishTasks.includes(taskId)) {
+				data.finishTasks.push(taskId);
 				const cfg = GameConfig.Task.getElement(taskId);
 				Utils.logP12Info("A_QuestFinish", {
 					timestamp: Date.now(),
@@ -61,7 +66,7 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 					questtype: cfg?.taskType, // 1主线 2日常
 				})
 				Reward.grantReward(this.currentPlayer, cfg.rewards, null, taskId)
-				this.currentData.save(false);
+				data.save(false);
 				return true;
 			}
 			return false;

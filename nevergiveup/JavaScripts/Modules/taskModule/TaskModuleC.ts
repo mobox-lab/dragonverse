@@ -124,8 +124,9 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
     }
 
     protected onStart(): void {
-        TimerModuleUtils.addOnlineDayListener(() => this.clearFinishDailyTask(false), this);
-        TimerModuleUtils.addLoginDayListener(() => this.clearFinishDailyTask(true), this);
+        TimerModuleUtils.addOnlineDayListener(() => this.clearFinishDailyTask(), this);
+        TimerModuleUtils.addLoginDayListener(() => this.clearFinishDailyTask(), this);
+        this.server.net_clearTaskTodayIfNewDay();
     }
 
     /**
@@ -135,22 +136,18 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
         this.initTask();
     }
 
-    public clearDaily(isSave: boolean) {
-        this.clearFinishDailyTask(isSave);
-    }
-
-    //清空data中已经完成的日常任务
-    private clearFinishDailyTask(isSave: boolean) {
-        console.log("hsf111====================== C端日常任务刷新", isSave);
+    // 判断如果是新的一天，清空 data 中已经完成的日常任务 否则不变
+    public clearFinishDailyTask() {
+        console.log("hsf111====================== 判断 C 端日常任务是否刷新");
         // setTimeout(() => {//可能出现的情况，服务器还没就绪的时候请求，有概率报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704956700&request_id=1745342006802169857&requestIdDetail=1745342130244730881&kindIndex=0
         //     Utils.log2FeiShu("C端日常任务刷新" + Player?.localPlayer?.userId + "hsf" + GameManager?.playerName);
         // }, 3000)
         TimeUtil.delayExecute(() => {
             //清空已经完成的任务
-            this.data.finishTasks = this.data.finishTasks.filter(
-                (taskId) => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily
-            );
-            isSave && this.server.net_clearFinishDailyTaskByPlayer();
+            // this.data.finishTasks = this.data.finishTasks.filter(
+            //     (taskId) => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily
+            // );
+            this.server.net_clearTaskTodayIfNewDay();
             //初始化主线任务
             const allCfg = GameConfig.Task.getAllElement();
             allCfg.forEach((element) => {

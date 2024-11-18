@@ -45,16 +45,16 @@ addGMCommand(
     undefined
 );
 
-addGMCommand(
-    "清空日常任务",
-    "void",
-    () => {
-        ModuleService.getModule(TaskModuleC).clearDaily(true);
-    },
-    () => {},
-    undefined,
-    undefined
-);
+// addGMCommand(
+//     "清空日常任务",
+//     "void",
+//     () => {
+//         ModuleService.getModule(TaskModuleC).clearDaily();
+//     },
+//     () => {},
+//     undefined,
+//     undefined
+// );
 
 addGMCommand("打开粒子", "string", (value) => {
     console.log(!!+value, "testttt");

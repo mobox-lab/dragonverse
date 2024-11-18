@@ -114,6 +114,7 @@ export default class UI_TaskMain extends TaskMain_Generate {
     onShow() {
         TweenCommon.popUpShow(this.rootCanvas);
         const module = ModuleService.getModule(TaskModuleC);
+        module.clearFinishDailyTask();
         if (module.task.size <= 0) {
             UIService.hideUI(this);
         } else {
