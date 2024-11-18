@@ -12,6 +12,8 @@ import utc from 'dayjs/plugin/utc';
 import { TimerModuleUtils } from "../TimeModule/time";
 import { GameConfig } from "../../config/GameConfig";
 import { EmTaskType } from "./TaskModuleC";
+import TalentModuleS from "../talent/TalentModuleS";
+import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 
 dayjs.extend(utc);
 
@@ -38,21 +40,27 @@ export class TaskModuleDataHelper extends Subdata {
         if(this.finishTasks == null) this.finishTasks = [];
     }
 
-    public clearTaskTodayIfNewDay() {
+    public clearAllDaily(player: Player, nowTime: number) {
+        if(!player) return;
+        console.log("#time clearAllDaily player userId:" + player.userId + " nowTime:" + nowTime);
+        ModuleService.getModule(TalentModuleS)?.clearDailyCountByPlayer(player);
+        ModuleService.getModule(PlayerModuleS)?.clearDailyCountByPlayer(player);
+        this.finishTasks = this.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
+        this.lastDailyTaskRefreshTimestamp = nowTime;
+        this.save(true);
+    }
+
+    public clearTaskTodayIfNewDay(player: Player) {
         const nowTime = dayjs.utc().valueOf();
         console.log("#time clearTaskTodayIfNewDay finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
         if(this.lastDailyTaskRefreshTimestamp) {
             const preTime = this.lastDailyTaskRefreshTimestamp;
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
             if(isNewDay) {
-                this.finishTasks = this.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
-                this.lastDailyTaskRefreshTimestamp = nowTime;
-                this.save(true);
+                this.clearAllDaily(player, nowTime);
             }
         } else {
-            this.finishTasks = this.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
-            this.lastDailyTaskRefreshTimestamp = nowTime;
-            this.save(true);
+            this.clearAllDaily(player, nowTime);
         }
         console.log("#time clearTaskTodayIfNewDay after finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
     }

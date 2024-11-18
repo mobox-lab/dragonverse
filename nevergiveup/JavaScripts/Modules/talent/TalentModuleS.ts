@@ -25,6 +25,14 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         TimerModuleUtils.addOnlineDayListener(this.clearDailyCount, this);
     }
 
+    public clearDailyCountByPlayer(player: Player) {
+        const data = this.getPlayerData(player);
+        if (data) {
+            data.dailyCount = 0;
+            data.save(true);
+        }
+    }
+
     private clearDailyCount() {
         const players = Player.getAllPlayers();
         players.forEach(player => {
@@ -34,6 +42,12 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
                 data.save(false);
             }
         });
+    }
+
+    public net_clearDailyCount() {
+        const data = this.currentData;
+        if(!data) return false;
+        data.dailyCount = 0;
     }
 
     public async setTalent(player: Player, id: number, level: number) {
@@ -107,10 +121,5 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         }
         await this.setTalent(player, id, nextLv);
         return true;
-    }
-
-    public net_clearDailyCount() {
-        this.currentData.dailyCount = 0;
-        this.currentData.save(false);
     }
 }

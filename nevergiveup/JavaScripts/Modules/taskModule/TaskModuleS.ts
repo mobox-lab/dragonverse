@@ -34,9 +34,10 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 	 */
 	public net_clearTaskTodayIfNewDay() {
 		// this.clearFinishDailyTaskByPlayer(this.currentPlayer);
+		const player = this.currentPlayer;
         const data = this.currentData;
-        if(!data) return false;
-        data.clearTaskTodayIfNewDay();
+        if(!data || !player) return false;
+        data.clearTaskTodayIfNewDay(player);
 	}
 
 	private clearFinishDailyTaskByPlayer(player: Player) {

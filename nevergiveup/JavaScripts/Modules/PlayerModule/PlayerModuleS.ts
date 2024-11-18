@@ -75,6 +75,31 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         }
     }
 
+    public clearDailyCountByPlayer(player: Player) {
+        let data = this.getPlayerData(player);
+        if (!data) return;
+        data.completeStageCount.daily = 0;
+        data.killEnemyCount.daily = 0;
+        data.killHealEnemyCount.daily = 0;
+        data.killBerserkEnemyCount.daily = 0;
+        data.killFlyEnemyCount.daily = 0;
+        data.killStealthEnemyCount.daily = 0;
+        data.perfectCompleteStageCount.daily = 0;
+        data.lightTowerCount.daily = 0;
+        data.darkTowerCount.daily = 0;
+        data.waterTowerCount.daily = 0;
+        data.fireTowerCount.daily = 0;
+        data.woodTowerCount.daily = 0;
+        data.earthTowerCount.daily = 0;
+        data.levelThreeCount.daily = 0;
+        data.infinityGameTimes.daily = 0;
+        data.infinityBossCount.daily = 0;
+        data.towerLevelUpCount.daily = 0;
+        data.levelUpCount.daily = 0;
+        data.unlockTowerDaily = 0;
+        data.save(true);
+    }
+
     public net_SaveSumCount(
         sumCompleteStageCount: number,
         dailyCompleteStageCount: number,
