@@ -10,6 +10,7 @@
 import { PlayerActions } from "../../Actions";
 import { GameConfig } from "../../config/GameConfig";
 import { ItemType } from "../../tool/Enum";
+import Utils from "../../Utils";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 import { TimerModuleUtils } from "../TimeModule/time";
 // import { GlobalRankModuleS } from "../globalRank/GlobalRankModuleS";
@@ -137,21 +138,52 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveCompleteStageCount(sum: number, daily: number) {
-        this.currentData.completeStageCount.sum = sum;
-        this.currentData.completeStageCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.completeStageCount.sum = sum;
+        data.completeStageCount.daily = daily;
+        if (daily === 10) { // 完成日常任务 100055 今日游戏10次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100055,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_savePerfectCompleteStageCount(sum: number, daily: number) {
-        this.currentData.perfectCompleteStageCount.sum = sum;
-        this.currentData.perfectCompleteStageCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.perfectCompleteStageCount.sum = sum;
+        data.perfectCompleteStageCount.daily = daily;
+        if (daily === 10) { // 完成日常任务 100056 今日完美通关10次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100056,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveKillEnemyCount(sum: number, daily: number) {
-        this.currentData.killEnemyCount.sum = sum;
-        this.currentData.killEnemyCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.killEnemyCount.daily;
+        data.killEnemyCount.sum = sum;
+        data.killEnemyCount.daily = daily;
+        if (daily >= 300 && preDaily < 300) { // 完成日常任务 100058 今日击败怪物300个
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100058,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveSetting(bgmVoiceFactor: number, attackVoiceFactor: number) {
@@ -161,39 +193,99 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveLightTowerCount(sum: number, daily: number) {
-        this.currentData.lightTowerCount.sum = sum;
-        this.currentData.lightTowerCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.lightTowerCount.sum = sum;
+        data.lightTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100060 今日部署光元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100060,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
-
     public net_saveDarkTowerCount(sum: number, daily: number) {
-        this.currentData.darkTowerCount.sum = sum;
-        this.currentData.darkTowerCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.darkTowerCount.sum = sum;
+        data.darkTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100061 今日部署暗元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100061,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveWaterTowerCount(sum: number, daily: number) {
-        this.currentData.waterTowerCount.sum = sum;
-        this.currentData.waterTowerCount.daily = daily;
-        this.currentData.save(false);
+        // 100062 今日部署水元素塔200次 
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.waterTowerCount.sum = sum;
+        data.waterTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100062 今日部署水元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100062,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveFireTowerCount(sum: number, daily: number) {
-        this.currentData.fireTowerCount.sum = sum;
-        this.currentData.fireTowerCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.fireTowerCount.sum = sum;
+        data.fireTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100063 今日部署火元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100063,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveWoodTowerCount(sum: number, daily: number) {
-        this.currentData.woodTowerCount.sum = sum;
-        this.currentData.woodTowerCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.woodTowerCount.sum = sum;
+        data.woodTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100064 今日部署木元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100064,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveEarthTowerCount(sum: number, daily: number) {
-        this.currentData.earthTowerCount.sum = sum;
-        this.currentData.earthTowerCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.earthTowerCount.sum = sum;
+        data.earthTowerCount.daily = daily;
+        if (daily === 200) { // 完成日常任务 100065 今日部署土元素塔200次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100065,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveInfinityWaveTimes(times: number) {
@@ -202,45 +294,120 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveLevelThreeCount(sum: number, daily: number) {
-        this.currentData.levelThreeCount.sum = sum;
-        this.currentData.levelThreeCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.levelThreeCount.daily;
+        data.levelThreeCount.sum = sum;
+        data.levelThreeCount.daily = daily;
+        if (daily >= 100 && preDaily < 100) { // 完成日常任务 100066 今日强化3级塔100次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100066,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveKillHealCount(sum: number, daily: number) {
-        this.currentData.killHealEnemyCount.sum = sum;
-        this.currentData.killHealEnemyCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.killHealEnemyCount.daily;
+        data.killHealEnemyCount.sum = sum;
+        data.killHealEnemyCount.daily = daily;
+        if (daily >= 200 && preDaily < 200) { // 完成日常任务 100067 今日击败复原力怪物200只
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100067,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveKillBerserkCount(sum: number, daily: number) {
-        this.currentData.killBerserkEnemyCount.sum = sum;
-        this.currentData.killBerserkEnemyCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.killBerserkEnemyCount.daily;
+        data.killBerserkEnemyCount.sum = sum;
+        data.killBerserkEnemyCount.daily = daily;
+        if (daily >= 200 && preDaily < 200) { // 完成日常任务 100068 今日击败狂暴怪物200只
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100068,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveKillFlyCount(sum: number, daily: number) {
-        this.currentData.killFlyEnemyCount.sum = sum;
-        this.currentData.killFlyEnemyCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;  
+        const player = this.currentPlayer;
+        const preDaily = data.killFlyEnemyCount.daily;
+        data.killFlyEnemyCount.sum = sum;
+        data.killFlyEnemyCount.daily = daily;
+        if (daily >= 200 && preDaily < 200) { // 完成日常任务 100070 今日击败飞行怪物200只
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100070,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveKillStealthCount(sum: number, daily: number) {
-        this.currentData.killStealthEnemyCount.sum = sum;
-        this.currentData.killStealthEnemyCount.daily = daily;
+        const data = this.currentData;  
+        const player = this.currentPlayer;
+        const preDaily = data.killStealthEnemyCount.daily;
+        data.killStealthEnemyCount.sum = sum;
+        data.killStealthEnemyCount.daily = daily;
+        if (daily >= 200 && preDaily < 200) { // 完成日常任务 100069 今日击败隐身怪物200只
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100069,
+                questtype: 2, // 1主线 2日常
+            })
+        }
         this.currentData.save(false);
     }
 
     public net_saveInfinityGameTimes(sum: number, daily: number) {
-        this.currentData.infinityGameTimes.sum = sum;
-        this.currentData.infinityGameTimes.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.infinityGameTimes.sum = sum;
+        data.infinityGameTimes.daily = daily;
+        if (daily === 3) { // 完成日常任务 100057 今日挑战无尽关卡3次
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100057,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveInfinityBossCount(sum: number, daily: number) {
-        this.currentData.infinityBossCount.sum = sum;
-        this.currentData.infinityBossCount.daily = daily;
-        this.currentData.save(false);
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        data.infinityBossCount.sum = sum;
+        data.infinityBossCount.daily = daily;
+        if (daily === 3) { // 完成日常任务 100059 今日击败无尽关卡首领3个
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100059,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveTowerLevelUpCount(sum: number, daily: number) {
@@ -250,14 +417,38 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveLevelUpCount(sum: number, daily: number) {
-        this.currentData.levelUpCount.sum = sum;
-        this.currentData.levelUpCount.daily = daily;
-        this.currentData.save(false);
+        // 100071 今日角色完成一次升级 
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.levelUpCount.daily;
+        data.levelUpCount.sum = sum;
+        data.levelUpCount.daily = daily;
+        if (daily >= 1 && preDaily < 1) { // 完成日常任务 100071 今日角色完成一次升级
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100071,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     public net_saveUnlockTowerDaily(daily: number) {
-        this.currentData.unlockTowerDaily = daily;
-        this.currentData.save(false);
+        // [] 100073 今日解锁一个塔 25
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        const preDaily = data.unlockTowerDaily;
+        data.unlockTowerDaily = daily;
+        if (daily >= 1 && preDaily < 1) { // 完成日常任务 100073 今日解锁一个塔
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100073,
+                questtype: 2, // 1主线 2日常
+            })
+        }
+        data.save(false);
     }
 
     protected onPlayerLeft(player: mw.Player): void {

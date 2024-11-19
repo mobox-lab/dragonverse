@@ -65,12 +65,6 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 			if (!data.finishTasks.includes(taskId)) {
 				data.finishTasks.push(taskId);
 				const cfg = GameConfig.Task.getElement(taskId);
-				Utils.logP12Info("A_QuestFinish", {
-					timestamp: Date.now(),
-					userId,
-					questid: taskId,
-					questtype: cfg?.taskType, // 1主线 2日常
-				})
 				Reward.grantReward(this.currentPlayer, cfg.rewards, null, taskId)
 				data.save(false);
 				return true;

@@ -52,8 +52,17 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
 
     public async setTalent(player: Player, id: number, level: number) {
         const playerData = this.getPlayerData(player.userId);
+        const preDaily = playerData.dailyCount;
         playerData.dailyCount++;
         playerData.setTalentIndex(id, level);
+        if (playerData.dailyCount >= 1 && preDaily < 1) { // 100072 今日解锁一点天赋
+            Utils.logP12Info("A_QuestFinish", {
+                timestamp: Date.now(),
+                userId: player?.userId ?? '',
+                questid: 100072,
+                questtype: 2, // 1主线 2日常
+            })
+        }
         playerData.save(true);
         await this.getClient(player).net_setItem(id, level);
         return true;
