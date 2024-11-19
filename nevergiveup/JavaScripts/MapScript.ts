@@ -12,6 +12,7 @@ import { TowerEvent } from "./Modules/TowerModule/TowerEnum";
 import { EStageState } from "./StageEnums";
 import { GameConfig } from "./config/GameConfig";
 import { StageUtil } from "./stage/Stage";
+import Log4Ts from "mw-log4ts";
 
 export namespace MapManager {
     export let script: MapScript;
@@ -105,83 +106,87 @@ export default class MapScript extends Script {
 
     protected async onStart(): Promise<void> {
         if (SystemUtil.isClient()) {
-            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
-            this.gameObject.worldTransform.position = stageCfg?.stagePosition.clone();
-            this.gameObject.worldTransform.rotation = new Rotation(
-                stageCfg?.rotation?.[0] ?? 200,
-                stageCfg?.rotation?.[1] ?? 0,
-                stageCfg?.rotation?.[2] ?? 0
-            );
-            let center = Vector.zero;
-            let extend = Vector.zero;
-            this.gameObject.getBounds(false, center, extend, true);
-            await this.parseNode(this.gameObject);
-            MapManager.script = this;
-            this.useUpdate = true;
+            try {
+                const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+                this.gameObject.worldTransform.position = stageCfg?.stagePosition.clone();
+                this.gameObject.worldTransform.rotation = new Rotation(
+                    stageCfg?.rotation?.[0] ?? 200,
+                    stageCfg?.rotation?.[1] ?? 0,
+                    stageCfg?.rotation?.[2] ?? 0
+                );
+                let center = Vector.zero;
+                let extend = Vector.zero;
+                this.gameObject.getBounds(false, center, extend, true);
+                await this.parseNode(this.gameObject);
+                MapManager.script = this;
+                this.useUpdate = true;
 
-            let distance = (a: number[], b: number[]): number => {
-                return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2);
-            };
+                let distance = (a: number[], b: number[]): number => {
+                    return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2);
+                };
 
-            for (let i = 0; i < this.roads.length; i++) {
-                let points = MapManager.getRoadPositions(i);
-                this.totalDistance[i] = 0;
-                this.distances[i] = points.map((point, index) => {
-                    if (index === 0) return 0;
-                    let d = distance(points[index - 1], point);
-                    return d;
+                for (let i = 0; i < this.roads.length; i++) {
+                    let points = MapManager.getRoadPositions(i);
+                    this.totalDistance[i] = 0;
+                    this.distances[i] = points.map((point, index) => {
+                        if (index === 0) return 0;
+                        let d = distance(points[index - 1], point);
+                        return d;
+                    });
+
+                    this.totalDistance[i] = this.distances[i].reduce((a, b) => a + b, 0);
+                }
+
+                for (let i = 0; i < this.flyRoads.length; i++) {
+                    let flyPoints = MapManager.getFlyPositions(i);
+                    this.totalFlyDistance[i] = 0;
+                    this.flyDistances[i] = flyPoints.map((point, index) => {
+                        if (index === 0) return 0;
+                        let d = distance(flyPoints[index - 1], point);
+                        return d;
+                    });
+
+                    this.totalFlyDistance[i] = this.flyDistances[i].reduce((a, b) => a + b, 0);
+                }
+
+                this.towerCreateEvent = Event.addLocalListener(TowerEvent.Create, (v: number) => {
+                    this.slots[v].isFree = false;
+                    // this.resetMaterial(this.slots[v].node as Model);
+                    // this.slots[v].showOutline(false);
+                    this.slots[v].showPlus(false);
+                    this.slots[v].showBg(false);
+                });
+                this.towerDestroyEvent = Event.addLocalListener(TowerEvent.Destroy, (v: number) => {
+                    this.slots[v].isFree = true;
+                    this.slots[v].showPlus(true);
                 });
 
-                this.totalDistance[i] = this.distances[i].reduce((a, b) => a + b, 0);
-            }
-
-            for (let i = 0; i < this.flyRoads.length; i++) {
-                let flyPoints = MapManager.getFlyPositions(i);
-                this.totalFlyDistance[i] = 0;
-                this.flyDistances[i] = flyPoints.map((point, index) => {
-                    if (index === 0) return 0;
-                    let d = distance(flyPoints[index - 1], point);
-                    return d;
+                StageActions.onStageStateChanged.add((state: EStageState, ...param: number[]) => {
+                    if (state === EStageState.Wait) {
+                        for (let i = 0; i < this.arrows.length; i++) {
+                            this.arrowTimers[i] = 0;
+                            this.arrowLoops[i] = 0;
+                        }
+                    }
                 });
 
-                this.totalFlyDistance[i] = this.flyDistances[i].reduce((a, b) => a + b, 0);
-            }
-
-            this.towerCreateEvent = Event.addLocalListener(TowerEvent.Create, (v: number) => {
-                this.slots[v].isFree = false;
-                // this.resetMaterial(this.slots[v].node as Model);
-                // this.slots[v].showOutline(false);
-                this.slots[v].showPlus(false);
-                this.slots[v].showBg(false);
-            });
-            this.towerDestroyEvent = Event.addLocalListener(TowerEvent.Destroy, (v: number) => {
-                this.slots[v].isFree = true;
-                this.slots[v].showPlus(true);
-            });
-
-            StageActions.onStageStateChanged.add((state: EStageState, ...param: number[]) => {
-                if (state === EStageState.Wait) {
-                    for (let i = 0; i < this.arrows.length; i++) {
-                        this.arrowTimers[i] = 0;
-                        this.arrowLoops[i] = 0;
+                for (let i = 0; i < this.roads.length; i++) {
+                    this.arrowTimers[i] = 0;
+                    this.arrowLoops[i] = 0;
+                    let arrow = (await GameObjPool.asyncSpawn("128901")) as Effect;
+                    if (arrow) {
+                        arrow.worldTransform.rotation = new Rotation(90, 0, 0);
+                        arrow.worldTransform.scale = new Vector(6, 1, 10);
+                        arrow.loopCount = 0;
+                        arrow.play();
+                        this.arrows.push(arrow);
                     }
                 }
-            });
 
-            for (let i = 0; i < this.roads.length; i++) {
-                this.arrowTimers[i] = 0;
-                this.arrowLoops[i] = 0;
-                let arrow = (await GameObjPool.asyncSpawn("128901")) as Effect;
-                if (arrow) {
-                    arrow.worldTransform.rotation = new Rotation(90, 0, 0);
-                    arrow.worldTransform.scale = new Vector(6, 1, 10);
-                    arrow.loopCount = 0;
-                    arrow.play();
-                    this.arrows.push(arrow);
-                }
+                StageActions.onMapLoaded.call();
+            } catch (error) {
+                Log4Ts.error(MapScript, "on start map load:", error);
             }
-
-            StageActions.onMapLoaded.call();
         }
     }
 
