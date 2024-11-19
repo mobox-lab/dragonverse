@@ -4,9 +4,6 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
-import { GameManager } from "../GameManager";
-import GameStart from "../GameStart";
-import { CardState } from "../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../TweenCommon";
 import { GameConfig } from "../config/GameConfig";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
@@ -35,7 +32,8 @@ export default class QuestionUI extends QuestionUI_Generate {
             });
         });
         this.btn_Confirm_Use.onClicked.add(() => {
-            if (GameManager.getScript().getLanguageId() === 1) {
+            let language = LocaleUtil.getDefaultLocale().toString().toLowerCase();
+            if (!!language.match("zh")) {
                 StringUtil.clipboardCopy(
                     "https://mobox.gitbook.io/cn-long-yu-bao-wei-zhan-ru-men-shou-ce-dragon-defense"
                 );
