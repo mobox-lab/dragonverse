@@ -214,14 +214,14 @@ export default class LobbyUI extends LobbyUI_Generate {
         // 打开商店
         KeyOperationManager.getInstance().bindButton(this, Keys.T, this.returnBtn);
         KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
-            if (GameManager.getStageClient()) {
-                return;
-            }
-            const ui = UIService.getUI(TowerShopUI);
-            if (ui.visible) ui.hideTween();
-            else UIService.show(TowerShopUI, { isShop: true });
-        });
+        // KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+        //     if (GameManager.getStageClient()) {
+        //         return;
+        //     }
+        //     const ui = UIService.getUI(TowerShopUI);
+        //     if (ui.visible) ui.hideTween();
+        //     else UIService.show(TowerShopUI, { isShop: true });
+        // });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
             const ui = UIService.getUI(SettingUI);
             if (ui.visible) ui.hide();
@@ -246,7 +246,7 @@ export default class LobbyUI extends LobbyUI_Generate {
     protected onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.T);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.M);
-        KeyOperationManager.getInstance().unregisterKey(this, Keys.B);
+        // KeyOperationManager.getInstance().unregisterKey(this, Keys.B);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.L);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.O);
