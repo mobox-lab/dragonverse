@@ -45,7 +45,7 @@ export namespace GameManager {
     let stage: StageC;
     let stages: StageS[] = [];
     export let playerName: string = "";
-    export let useEffect: boolean = true;
+    export let useEffect: boolean = false;
     export let showDamage: boolean = false;
     export let waveAmount: number = 10;
     export const allGuid = [
