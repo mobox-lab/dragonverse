@@ -34,7 +34,6 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
     private _tower: TowerBase;
     private _upgradeCount: number = 0;
     // private _textItemUIs: TextItemUI[] = [];
-    private _tagItemUIs: TowerTagItem_Generate[] = [];
 
     /**
      * 构造UI文件成功后，在合适的时机最先初始化一次
@@ -66,12 +65,6 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
                 v.level >= this._tower.level + this._upgradeCount && this.onShow(v);
             }
         });
-        for (let i = 0; i < 4; i++) {
-            let item = UIService.create(TowerTagItem_Generate);
-            item.visible = false;
-            this.icontagCanvas.addChild(item.uiObject);
-            this._tagItemUIs.push(item);
-        }
         KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Q, this.sellTower.bind(this));
         KeyOperationManager.getInstance().onKeyUp(undefined, Keys.E, this.levelUpTower.bind(this));
         KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Escape, this.hideTowerInfo.bind(this));
@@ -241,12 +234,11 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         this.updateStrategyUI();
         const tags = this.getTags();
         const len = tags?.length ?? 0;
-        for (let i = 0; i < this._tagItemUIs.length; i++) {
-            this._tagItemUIs[i].visible = i < len;
-            if (i < len) {
-                // this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
-                this._tagItemUIs[i].img_tag.imageGuid = tags[i];
-            }
+		this.icontagCanvas.removeAllChildren();
+        for (let i = 0; i < len; i++) {
+			let item = UIService.create(TowerTagItem_Generate);
+			item.img_tag.imageGuid = tags[i];
+			this.icontagCanvas.addChild(item.uiObject);
         }
 
         this.showLevel();

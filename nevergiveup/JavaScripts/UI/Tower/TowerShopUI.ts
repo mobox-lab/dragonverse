@@ -8,22 +8,19 @@
 import Gtk from "gtoolkit";
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../../TweenCommon";
+import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import { GlobalData } from "../../const/GlobalData";
 import { TowerDamageType, TowerElementType, TowerStrategyType, TowerTargetType } from "../../const/enum";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import { MGSTool } from "../../tool/MGSTool";
 import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TextItemUI from "../TextItemUI";
 import ShopItemUI from "./ShopItemUI";
-import Utils from "../../Utils";
 
 export default class TowerShopUI extends TowerShopUI_Generate {
-	private _textItemUIs: TextItemUI[] = [];
-	private _tagItemUIs: TowerTagItem_Generate[] = [];
-	
+	private _textItemUIs: TextItemUI[] = [];	
 	private _cfgID: number;
 	private _state: CardState;
 	private _cfg: ITowerElement;
@@ -79,13 +76,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
         this.closeBtn.onClicked.add(() => this.hideTween());
 		this.infoBtn.onClicked.add(() => {
 			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state, this.isShop);
-		}); 
-		for (let i = 0; i < 4; i++) {
-			let item = UIService.create(TowerTagItem_Generate);
-			item.visible = false;
-			this.tagCanvas.addChild(item.uiObject);
-			this._tagItemUIs.push(item);
-		}
+		});
 		this.infoLv1.onClicked.add(() => {
 			this.updateInfo(0);
 		})
@@ -253,13 +244,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		}
 		const tags = this.getTags();
 		let len = tags?.length ?? 0;
-		for (let i = 0; i < this._tagItemUIs.length; i++) {
-			this._tagItemUIs[i].visible = (i < len);
-			if (i < len) {
-				// this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
-				this._tagItemUIs[i].img_tag.imageGuid = tags[i];
-			}
-		}
+		this.tagCanvas.removeAllChildren();
+		for (let i = 0; i < len; i++) {
+			let item = UIService.create(TowerTagItem_Generate);
+			item.img_tag.imageGuid = tags[i];
+			this.tagCanvas.addChild(item.uiObject);
+ 		}
 	}
 
 	/**

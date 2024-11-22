@@ -9,7 +9,6 @@ import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate
 import TowerShopUI from "./TowerShopUI";
 
 export default class ShopItemUI extends ShopItemUI_Generate {
-	private _tagItemUIs: TowerTagItem_Generate[] = [];
 	public isShop: boolean = true;
 	private _state: CardState;
 	public get state(): CardState {
@@ -75,13 +74,6 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.chooseBtn.onClicked.add(() => {
 			UIService.getUI(TowerShopUI).showTowerInfo(this._cfgID, this.state);
 		});
-		
-		for (let i = 0; i < 4; i++) {
-			let item = UIService.create(TowerTagItem_Generate);
-			item.visible = false;
-			this.icontagCanvas.addChild(item.uiObject);
-			this._tagItemUIs.push(item);
-		}
 	}
 
 	/**
@@ -134,12 +126,11 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.refreshState();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;
-		for (let i = 0; i < this._tagItemUIs.length; i++) {
-			this._tagItemUIs[i].visible = (i < len);
-			if (i < len) {
-				// this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
-				this._tagItemUIs[i].img_tag.imageGuid = tags[i];
-			}
+		this.icontagCanvas.removeAllChildren();
+		for (let i = 0; i < len; i++) {
+			let item = UIService.create(TowerTagItem_Generate);
+			item.img_tag.imageGuid = tags[i];
+			this.icontagCanvas.addChild(item.uiObject);
 		}
 	}
 
