@@ -232,6 +232,118 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.txtSFXOff_Internal
 	}
+	private imgBackground_1_1_1_Internal: mw.Image
+	public get imgBackground_1_1_1(): mw.Image {
+		if(!this.imgBackground_1_1_1_Internal&&this.uiWidgetBase) {
+			this.imgBackground_1_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgBackground_1_1_1') as mw.Image
+		}
+		return this.imgBackground_1_1_1_Internal
+	}
+	private imgCamera_1_Internal: mw.Image
+	public get imgCamera_1(): mw.Image {
+		if(!this.imgCamera_1_Internal&&this.uiWidgetBase) {
+			this.imgCamera_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgCamera_1') as mw.Image
+		}
+		return this.imgCamera_1_Internal
+	}
+	private txtVoiceBgm_2_Internal: mw.TextBlock
+	public get txtVoiceBgm_2(): mw.TextBlock {
+		if(!this.txtVoiceBgm_2_Internal&&this.uiWidgetBase) {
+			this.txtVoiceBgm_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtVoiceBgm_2') as mw.TextBlock
+		}
+		return this.txtVoiceBgm_2_Internal
+	}
+	private chooseCanvasEffect_Internal: mw.Canvas
+	public get chooseCanvasEffect(): mw.Canvas {
+		if(!this.chooseCanvasEffect_Internal&&this.uiWidgetBase) {
+			this.chooseCanvasEffect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect') as mw.Canvas
+		}
+		return this.chooseCanvasEffect_Internal
+	}
+	private effectBackground_Internal: mw.Image
+	public get effectBackground(): mw.Image {
+		if(!this.effectBackground_Internal&&this.uiWidgetBase) {
+			this.effectBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect/effectBackground') as mw.Image
+		}
+		return this.effectBackground_Internal
+	}
+	private effectSelectTrue_Internal: mw.StaleButton
+	public get effectSelectTrue(): mw.StaleButton {
+		if(!this.effectSelectTrue_Internal&&this.uiWidgetBase) {
+			this.effectSelectTrue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect/effectSelectTrue') as mw.StaleButton
+		}
+		return this.effectSelectTrue_Internal
+	}
+	private txtEffectOn_Internal: mw.TextBlock
+	public get txtEffectOn(): mw.TextBlock {
+		if(!this.txtEffectOn_Internal&&this.uiWidgetBase) {
+			this.txtEffectOn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect/txtEffectOn') as mw.TextBlock
+		}
+		return this.txtEffectOn_Internal
+	}
+	private effectSelectFalse_Internal: mw.StaleButton
+	public get effectSelectFalse(): mw.StaleButton {
+		if(!this.effectSelectFalse_Internal&&this.uiWidgetBase) {
+			this.effectSelectFalse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect/effectSelectFalse') as mw.StaleButton
+		}
+		return this.effectSelectFalse_Internal
+	}
+	private txtEffectOff_Internal: mw.TextBlock
+	public get txtEffectOff(): mw.TextBlock {
+		if(!this.txtEffectOff_Internal&&this.uiWidgetBase) {
+			this.txtEffectOff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasEffect/txtEffectOff') as mw.TextBlock
+		}
+		return this.txtEffectOff_Internal
+	}
+	private txtVoiceEffect_Internal: mw.TextBlock
+	public get txtVoiceEffect(): mw.TextBlock {
+		if(!this.txtVoiceEffect_Internal&&this.uiWidgetBase) {
+			this.txtVoiceEffect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtVoiceEffect') as mw.TextBlock
+		}
+		return this.txtVoiceEffect_Internal
+	}
+	private chooseCanvasNumber_Internal: mw.Canvas
+	public get chooseCanvasNumber(): mw.Canvas {
+		if(!this.chooseCanvasNumber_Internal&&this.uiWidgetBase) {
+			this.chooseCanvasNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasNumber') as mw.Canvas
+		}
+		return this.chooseCanvasNumber_Internal
+	}
+	private numberSelectTrue_Internal: mw.StaleButton
+	public get numberSelectTrue(): mw.StaleButton {
+		if(!this.numberSelectTrue_Internal&&this.uiWidgetBase) {
+			this.numberSelectTrue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasNumber/numberSelectTrue') as mw.StaleButton
+		}
+		return this.numberSelectTrue_Internal
+	}
+	private txtNumberOn_Internal: mw.TextBlock
+	public get txtNumberOn(): mw.TextBlock {
+		if(!this.txtNumberOn_Internal&&this.uiWidgetBase) {
+			this.txtNumberOn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasNumber/txtNumberOn') as mw.TextBlock
+		}
+		return this.txtNumberOn_Internal
+	}
+	private numberSelectFalse_Internal: mw.StaleButton
+	public get numberSelectFalse(): mw.StaleButton {
+		if(!this.numberSelectFalse_Internal&&this.uiWidgetBase) {
+			this.numberSelectFalse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasNumber/numberSelectFalse') as mw.StaleButton
+		}
+		return this.numberSelectFalse_Internal
+	}
+	private txtNumberOff_Internal: mw.TextBlock
+	public get txtNumberOff(): mw.TextBlock {
+		if(!this.txtNumberOff_Internal&&this.uiWidgetBase) {
+			this.txtNumberOff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasNumber/txtNumberOff') as mw.TextBlock
+		}
+		return this.txtNumberOff_Internal
+	}
+	private txtNumber_Internal: mw.TextBlock
+	public get txtNumber(): mw.TextBlock {
+		if(!this.txtNumber_Internal&&this.uiWidgetBase) {
+			this.txtNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtNumber') as mw.TextBlock
+		}
+		return this.txtNumber_Internal
+	}
 
 
 
@@ -286,6 +398,34 @@ export default class Setting_Generate extends UIScript {
 	   this.sFXSelectFalse.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.effectSelectTrue.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "effectSelectTrue");
+	   })
+	   this.initLanguage(this.effectSelectTrue);
+	   this.effectSelectTrue.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.effectSelectFalse.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "effectSelectFalse");
+	   })
+	   this.initLanguage(this.effectSelectFalse);
+	   this.effectSelectFalse.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.numberSelectTrue.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "numberSelectTrue");
+	   })
+	   this.initLanguage(this.numberSelectTrue);
+	   this.numberSelectTrue.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.numberSelectFalse.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "numberSelectFalse");
+	   })
+	   this.initLanguage(this.numberSelectFalse);
+	   this.numberSelectFalse.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   //按钮添加点击
 	   
 	   this.closeBtn.onClicked.add(()=>{
@@ -333,6 +473,27 @@ export default class Setting_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtSFXOff)
+	   
+	
+	   this.initLanguage(this.txtVoiceBgm_2)
+	   
+	
+	   this.initLanguage(this.txtEffectOn)
+	   
+	
+	   this.initLanguage(this.txtEffectOff)
+	   
+	
+	   this.initLanguage(this.txtVoiceEffect)
+	   
+	
+	   this.initLanguage(this.txtNumberOn)
+	   
+	
+	   this.initLanguage(this.txtNumberOff)
+	   
+	
+	   this.initLanguage(this.txtNumber)
 	   
 	
 	   //文本多语言
