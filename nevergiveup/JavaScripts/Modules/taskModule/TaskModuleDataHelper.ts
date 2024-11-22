@@ -47,6 +47,7 @@ export class TaskModuleDataHelper extends Subdata {
         ModuleService.getModule(PlayerModuleS)?.clearDailyCountByPlayer(player);
         this.finishTasks = this.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
         this.lastDailyTaskRefreshTimestamp = nowTime;
+        console.log("#time clearTaskTodayIfNewDay after finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
         this.save(true);
     }
 
@@ -58,10 +59,11 @@ export class TaskModuleDataHelper extends Subdata {
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
             if(isNewDay) {
                 this.clearAllDaily(player, nowTime);
+                return true;
             }
-        } else {
-            this.clearAllDaily(player, nowTime);
+            return false;
         }
-        console.log("#time clearTaskTodayIfNewDay after finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
+        this.clearAllDaily(player, nowTime);
+        return true;
     }
 }

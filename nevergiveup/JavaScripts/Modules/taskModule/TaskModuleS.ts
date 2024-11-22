@@ -32,12 +32,17 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 	/**
 	 * 清空某个玩家的已完成的日常任务
 	 */
-	public net_clearTaskTodayIfNewDay() {
-		// this.clearFinishDailyTaskByPlayer(this.currentPlayer);
+	public async net_clearTaskTodayIfNewDay() {
 		const player = this.currentPlayer;
-        const data = this.currentData;
-        if(!data || !player) return false;
-        data.clearTaskTodayIfNewDay(player);
+		const data = this.currentData;
+		try {
+			if (!data || !player) return false;
+			const res = data.clearTaskTodayIfNewDay(player);
+			return res;
+		} catch (e) {
+			Utils.logP12Info("A_Error", "net_clearTaskTodayIfNewDay error" + " userId:" + player?.userId + " error:" + e);
+			return false;
+		}
 	}
 
 	private clearFinishDailyTaskByPlayer(player: Player) {
