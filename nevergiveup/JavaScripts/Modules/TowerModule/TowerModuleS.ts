@@ -12,6 +12,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GameManager } from "../../GameManager";
 import { SettleState, StageS } from "../../stage/Stage";
 import Utils from "../../Utils";
+import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import TowerBase from "./Tower/TowerBase";
 import { TowerInfo } from "./TowerEnum";
 import { TowerModuleC } from "./TowerModuleC";
@@ -76,19 +77,18 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
         }
         const player = Player.getPlayer(info.playerID);
         try {
-            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                Utils.logP12Info("A_DeployTower", {
-                    timestamp: Date.now(),
-                    userId: player?.userId,
-                    roomId: roomInfo.roomId,
-                    stageId: stage.id,
-                    level: stage.stageCfg?.NameCN,
-                    movespeed: stage.speedMultipler,
-                    tower: info.configID, //部署塔编号
-                    position: info.placeID, // 部署地块编号
-                    towerlevel: 1, // 当前塔的等级 固定1
-                    cost: info?.gold || 0, // 花费能量
-                });
+            const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+            Utils.logP12Info("A_DeployTower", {
+                timestamp: Date.now(),
+                userId: player?.userId,
+                roomId: roomInfo.roomId,
+                stageId: stage.id,
+                level: stage.stageCfg?.NameCN,
+                movespeed: stage.speedMultipler,
+                tower: info.configID, //部署塔编号
+                position: info.placeID, // 部署地块编号
+                towerlevel: 1, // 当前塔的等级 固定1
+                cost: info?.gold || 0, // 花费能量
             });
         } catch (error) {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
@@ -114,21 +114,20 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
             const player = Player.getPlayer(info.playerID);
             const cfg = GameConfig.Tower.getElement(info.configID);
             try {
-                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                    Utils.logP12Info("A_UpgradeTower", {
-                        timestamp: Date.now(),
-                        userId: player?.userId,
-                        roomId: roomInfo.roomId,
-                        stageId: stage.id,
-                        level: stage.stageCfg?.NameCN,
-                        movespeed: stage.speedMultipler,
+                const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+                Utils.logP12Info("A_UpgradeTower", {
+                    timestamp: Date.now(),
+                    userId: player?.userId,
+                    roomId: roomInfo.roomId,
+                    stageId: stage.id,
+                    level: stage.stageCfg?.NameCN,
+                    movespeed: stage.speedMultipler,
 
-                        tower: info.configID, //部署塔编号
-                        position: info.placeID, // 部署地块编号
-                        towerlevel: info.level - addLevel + 1, // 当前塔的等级
-                        upgradeto: info.level + 1, // 升级到2级
-                        cost: cfg.spend[info.level], // 花费能量
-                    });
+                    tower: info.configID, //部署塔编号
+                    position: info.placeID, // 部署地块编号
+                    towerlevel: info.level - addLevel + 1, // 当前塔的等级
+                    upgradeto: info.level + 1, // 升级到2级
+                    cost: cfg.spend[info.level], // 花费能量
                 });
             } catch (error) {
                 Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
@@ -160,19 +159,18 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
             const player = Player.getPlayer(towerInfo.playerID);
             const cfg = GameConfig.Tower.getElement(towerInfo.configID);
             try {
-                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                    Utils.logP12Info("A_RemoveTower", {
-                        timestamp: Date.now(),
-                        userId: player?.userId,
-                        roomId: roomInfo.roomId,
-                        stageId: stage.id,
-                        level: stage.stageCfg?.NameCN,
-                        movespeed: stage.speedMultipler,
-                        tower: towerInfo.configID, //部署塔编号
-                        position: towerInfo.placeID, // 部署地块编号
-                        towerlevel: towerInfo.level + 1,
-                        cost: -cfg.sellBack[towerInfo.level].toFixed(),
-                    });
+                const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+                Utils.logP12Info("A_RemoveTower", {
+                    timestamp: Date.now(),
+                    userId: player?.userId,
+                    roomId: roomInfo.roomId,
+                    stageId: stage.id,
+                    level: stage.stageCfg?.NameCN,
+                    movespeed: stage.speedMultipler,
+                    tower: towerInfo.configID, //部署塔编号
+                    position: towerInfo.placeID, // 部署地块编号
+                    towerlevel: towerInfo.level + 1,
+                    cost: -cfg.sellBack[towerInfo.level].toFixed(),
                 });
             } catch (error) {
                 Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");

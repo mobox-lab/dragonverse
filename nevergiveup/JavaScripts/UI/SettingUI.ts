@@ -5,9 +5,10 @@
  */
 
 import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
+import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TweenCommon } from "../TweenCommon";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import { VoiceEvent } from "../tool/SoundUtil";
+import { EffectEvent, VoiceEvent } from "../tool/SoundUtil";
 import Setting_Generate from "../ui-generate/Setting/Setting_generate";
 
 export default class SettingUI extends Setting_Generate {
@@ -84,6 +85,66 @@ export default class SettingUI extends Setting_Generate {
             this.txtSFXOn.visibility = SlateVisibility.Visible;
             this.txtSFXOff.visibility = SlateVisibility.Hidden;
         }
+
+        const attackEffect = DataCenterC.getData(PlayerModuleData).attackEffect;
+        const attackDamage = DataCenterC.getData(PlayerModuleData).attackDamage;
+        if (attackEffect === 0) {
+            this.effectSelectFalse.visibility = SlateVisibility.Visible;
+            this.effectSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.txtEffectOn.visibility = SlateVisibility.Hidden;
+            this.txtEffectOff.visibility = SlateVisibility.Visible;
+        } else {
+            this.effectSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.effectSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtEffectOn.visibility = SlateVisibility.Visible;
+            this.txtEffectOff.visibility = SlateVisibility.Hidden;
+        }
+        this.effectSelectTrue.onClicked.add(() => {
+            this.effectSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.effectSelectFalse.visibility = SlateVisibility.Visible;
+            this.txtEffectOn.visibility = SlateVisibility.Hidden;
+            this.txtEffectOff.visibility = SlateVisibility.Visible;
+            Event.dispatchToLocal(EffectEvent.AttackEffect, 0);
+            TowerManager.towerMap?.forEach((tower) => {
+                tower.destroyEffect();
+            });
+        });
+        this.effectSelectFalse.onClicked.add(() => {
+            this.effectSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.effectSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtEffectOn.visibility = SlateVisibility.Visible;
+            this.txtEffectOff.visibility = SlateVisibility.Hidden;
+            Event.dispatchToLocal(EffectEvent.AttackEffect, 1);
+            TowerManager.towerMap?.forEach((tower) => {
+                tower.showEffect();
+            });
+        });
+
+        if (attackDamage === 0) {
+            this.numberSelectFalse.visibility = SlateVisibility.Visible;
+            this.numberSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.txtNumberOn.visibility = SlateVisibility.Hidden;
+            this.txtNumberOff.visibility = SlateVisibility.Visible;
+        } else {
+            this.numberSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.numberSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtNumberOn.visibility = SlateVisibility.Visible;
+            this.txtNumberOff.visibility = SlateVisibility.Hidden;
+        }
+        this.numberSelectTrue.onClicked.add(() => {
+            this.numberSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.numberSelectFalse.visibility = SlateVisibility.Visible;
+            this.txtNumberOn.visibility = SlateVisibility.Hidden;
+            this.txtNumberOff.visibility = SlateVisibility.Visible;
+            Event.dispatchToLocal(EffectEvent.AttackDamage, 0);
+        });
+        this.numberSelectFalse.onClicked.add(() => {
+            this.numberSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.numberSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtNumberOn.visibility = SlateVisibility.Visible;
+            this.txtNumberOff.visibility = SlateVisibility.Hidden;
+            Event.dispatchToLocal(EffectEvent.AttackDamage, 1);
+        });
     }
 
     /**

@@ -11,6 +11,7 @@ import { CycleUtil } from "../CycleUtil";
 import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
+import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { WaveConfig } from "../StageEnums";
@@ -850,17 +851,17 @@ export class Enemy implements BuffBag {
         this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
-
+        const attackDamage = DataCenterC.getData(PlayerModuleData).attackDamage;
         if (multiHits.length > 0) {
             const maxMultiHitItem = multiHits.reduce((maxItem, currentItem) => {
                 return currentItem.cfg.multiHit > (maxItem ? maxItem.cfg.multiHit : -Infinity) ? currentItem : maxItem;
             }, null);
             for (let i = 0; i < maxMultiHitItem.cfg.multiHit; i++) {
-                GameManager.showDamage && this.damageShow(P3Damage);
+                // attackDamage > 0 && this.damageShow(P3Damage);
                 this.hp -= finalDamage;
                 this.onHealthChanged();
                 this.isHurt = true;
-                if (this.position) {
+                if (this.position && attackDamage > 0) {
                     FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
                 }
                 if (this.hp < 0) {
@@ -868,11 +869,11 @@ export class Enemy implements BuffBag {
                 }
             }
         } else {
-            GameManager.showDamage && this.damageShow(P3Damage);
+            // attackDamage > 0 && this.damageShow(P3Damage);
             this.hp -= finalDamage;
             this.onHealthChanged();
             this.isHurt = true;
-            if (this.position) {
+            if (this.position && attackDamage > 0) {
                 FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
             }
         }

@@ -19,6 +19,11 @@ export enum VoiceEvent {
     Attack = "AttackVoiceFactor",
 }
 
+export enum EffectEvent {
+    AttackEffect = "AttackEffect",
+    AttackDamage = "AttackDamage",
+}
+
 /**声音工具 */
 export namespace SoundUtil {
     export let bgmVoiceFactor: number = 0.3;

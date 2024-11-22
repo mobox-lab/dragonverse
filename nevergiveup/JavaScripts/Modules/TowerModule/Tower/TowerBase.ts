@@ -25,6 +25,7 @@ import { MGSTool } from "../../../tool/MGSTool";
 import { TowerEvent, TowerInfo } from "../TowerEnum";
 import Log4Ts from "mw-log4ts";
 import TalentUtils from "../../talent/TalentUtils";
+import PlayerModuleData from "../../PlayerModule/PlayerModuleData";
 
 export type TowerProperty = {
     attackTime: number;
@@ -69,8 +70,34 @@ export default abstract class TowerBase implements BuffBag {
     createTime: number = 0;
     isWarmUp: boolean = false;
 
+    async destroyEffect() {
+        this._levelShow.forEach((go) => go?.destroy());
+    }
+
+    async showEffect() {
+        const v = this.level;
+        // 一级, 暂时没有
+        if (v === 0) {
+            this.setLevelEffect([]).then();
+        }
+        // 二级
+        if (v === 1) {
+            const ids = this.cfg.guid2 ?? [];
+            this.setLevelEffect(ids).then();
+        }
+        // 三级
+        if (v === 2) {
+            const ids = this.cfg.guid3 ?? [];
+            this.setLevelEffect(ids).then();
+        }
+    }
+
     private async setLevelEffect(ids: number[]) {
-        return
+        const attackEffect = DataCenterC.getData(PlayerModuleData).attackEffect;
+        if (attackEffect === 0) {
+            return;
+        }
+
         try {
             // 卸载旧特效
             this._levelShow.forEach((go) => go?.destroy());

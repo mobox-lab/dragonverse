@@ -16,7 +16,7 @@ import { GlobalEventName } from "../../const/enum";
 import { ElementEnum } from "../../enemy/EnemyBase";
 import { ItemType } from "../../tool/Enum";
 import { FirstEvent, MGSTool } from "../../tool/MGSTool";
-import { VoiceEvent } from "../../tool/SoundUtil";
+import { EffectEvent, VoiceEvent } from "../../tool/SoundUtil";
 import { TimerModuleUtils } from "../TimeModule/time";
 import PlayerModuleData from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
@@ -45,6 +45,12 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         UIService.getUI(SettingUI)[
             "bgmSelect" + (this.data.bgmVoiceFactor > 0 ? "False" : "True")
         ].onClicked.broadcast();
+        UIService.getUI(SettingUI)[
+            "effectSelect" + (this.data.attackEffect > 0 ? "False" : "True")
+        ].onClicked.broadcast();
+        UIService.getUI(SettingUI)[
+            "numberSelect" + (this.data.attackDamage > 0 ? "False" : "True")
+        ].onClicked.broadcast();
 
         Event.addLocalListener(VoiceEvent.Bgm, (value: number) => {
             this.data.bgmVoiceFactor = value;
@@ -54,6 +60,16 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         Event.addLocalListener(VoiceEvent.Attack, (value: number) => {
             this.data.attackVoiceFactor = value;
             this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor);
+        });
+
+        Event.addLocalListener(EffectEvent.AttackEffect, (value: number) => {
+            this.data.attackEffect = value;
+            this.server.net_saveEffectSetting(this.data.attackEffect, this.data.attackDamage);
+        });
+
+        Event.addLocalListener(EffectEvent.AttackDamage, (value: number) => {
+            this.data.attackDamage = value;
+            this.server.net_saveEffectSetting(this.data.attackEffect, this.data.attackDamage);
         });
 
         Event.addServerListener(GlobalEventName.ServerTipsEventName, (str: string) => {

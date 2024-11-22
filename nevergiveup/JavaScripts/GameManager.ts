@@ -45,7 +45,7 @@ export namespace GameManager {
     let stage: StageC;
     let stages: StageS[] = [];
     export let playerName: string = "";
-    export let useEffect: boolean = false;
+    export let useEffect: boolean = true;
     export let showDamage: boolean = false;
     export let waveAmount: number = 10;
     export const allGuid = [
@@ -117,14 +117,19 @@ export namespace GameManager {
                 allPlayers.push(player);
                 player.character.collisionWithOtherCharacterEnabled = false;
                 ModuleService.getModule(DragonDataModuleS).initData([player]);
+                // 缓存房间信息
+                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                    ModuleService.getModule(PlayerModuleS).setUserRoomInfo(player.userId, roomInfo);
+                });
             });
 
-            // Player.onPlayerLeave.add((player) => {
-            //     const index = allPlayers.indexOf(player);
-            //     if (index != -1) {
-            //         players.splice(index, 1);
-            //     }
-            // });
+            Player.onPlayerLeave.add((player) => {
+                // const index = allPlayers.indexOf(player);
+                // if (index != -1) {
+                //     players.splice(index, 1);
+                // }
+                ModuleService.getModule(PlayerModuleS).setUserRoomInfo(player.userId, null);
+            });
 
             Event.addClientListener("startStage", (player: Player, stageCfgId: number) => {
                 startGame([player.playerId], stageCfgId);

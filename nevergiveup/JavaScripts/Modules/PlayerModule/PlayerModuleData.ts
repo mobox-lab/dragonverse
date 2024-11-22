@@ -43,6 +43,10 @@ export default class PlayerModuleData extends Subdata {
     // 攻击音效
     @Decorator.persistence()
     attackVoiceFactor: number;
+    @Decorator.persistence()
+    attackEffect: number;
+    @Decorator.persistence()
+    attackDamage: number;
     // bgm音量
     @Decorator.persistence()
     bgmVoiceFactor: number;
@@ -111,6 +115,8 @@ export default class PlayerModuleData extends Subdata {
         this.exp = 0;
         this.unlockedTechNodes = [];
         this.attackVoiceFactor = 1;
+        this.attackEffect = 1;
+        this.attackDamage = 1;
         this.bgmVoiceFactor = 0.3;
         this.unlockTowerDaily = 0;
         this.completeStageCount = {
@@ -287,6 +293,8 @@ export default class PlayerModuleData extends Subdata {
                 daily: 0,
             };
         if (this.attackVoiceFactor === undefined) this.attackVoiceFactor = 1;
+        if (this.attackEffect === undefined) this.attackEffect = 1;
+        if (this.attackDamage === undefined) this.attackDamage = 1;
         if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 0.3;
         if (this.infinityWaveTimes === undefined) this.infinityWaveTimes = 0;
         if (this.unlockTowerDaily === undefined) this.unlockTowerDaily = 0;
