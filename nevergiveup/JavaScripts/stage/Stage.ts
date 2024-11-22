@@ -153,18 +153,17 @@ export class StageS {
             const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
             const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
             const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
-            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                Utils.logP12Info("A_StartStage", {
-                    timestamp: Date.now(),
-                    userId: player?.userId,
-                    roomId: roomInfo.roomId,
-                    stageId: this.id,
-                    level: stageCfg?.NameCN,
-                    movespeed: this.speedMultipler,
-                    dragonglory: dragonBlessList, // light dark water fire wood earth
-                    team: cards, //出战阵容
-                    talent, //天赋状态
-                });
+            const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+            Utils.logP12Info("A_StartStage", {
+                timestamp: Date.now(),
+                userId: player?.userId,
+                roomId: roomInfo.roomId,
+                stageId: this.id,
+                level: stageCfg?.NameCN,
+                movespeed: this.speedMultipler,
+                dragonglory: dragonBlessList, // light dark water fire wood earth
+                team: cards, //出战阵容
+                talent, //天赋状态
             });
         } catch (error) {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
@@ -294,21 +293,20 @@ export class StageS {
                             this._hp -= damage;
 
                             try {
-                                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                                    Utils.logP12Info("A_Escape", {
-                                        timestamp: Date.now(),
-                                        userId: player?.userId,
-                                        roomId: roomInfo.roomId,
-                                        stageId: this.id,
-                                        level: this.stageCfg?.NameCN,
-                                        movespeed: this.speedMultipler,
-                                        total: this._maxHp, //base血量上限
-                                        from: from, // 逃跑前血量
-                                        to: to, // 逃跑后血量
-                                        enemy: configId, // 逃跑怪物id
-                                        round: waveId + 1, // 第几波的怪
-                                        enemyId: enemyId, // 怪物唯一id
-                                    });
+                                const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+                                Utils.logP12Info("A_Escape", {
+                                    timestamp: Date.now(),
+                                    userId: player?.userId,
+                                    roomId: roomInfo.roomId,
+                                    stageId: this.id,
+                                    level: this.stageCfg?.NameCN,
+                                    movespeed: this.speedMultipler,
+                                    total: this._maxHp, //base血量上限
+                                    from: from, // 逃跑前血量
+                                    to: to, // 逃跑后血量
+                                    enemy: configId, // 逃跑怪物id
+                                    round: waveId + 1, // 第几波的怪
+                                    enemyId: enemyId, // 怪物唯一id
                                 });
                             } catch (error) {
                                 Utils.logP12Info(
@@ -390,15 +388,14 @@ export class StageS {
             if (this.id == id) {
                 this.speedMultipler = speedMultipler;
                 try {
-                    TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                        Utils.logP12Info("A_SpeedChange", {
-                            timestamp: Date.now(),
-                            userId: player?.userId,
-                            roomId: roomInfo.roomId,
-                            stageId: this.id,
-                            level: this.stageCfg?.NameCN,
-                            movespeed: this.speedMultipler,
-                        });
+                    const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+                    Utils.logP12Info("A_SpeedChange", {
+                        timestamp: Date.now(),
+                        userId: player?.userId,
+                        roomId: roomInfo.roomId,
+                        stageId: this.id,
+                        level: this.stageCfg?.NameCN,
+                        movespeed: this.speedMultipler,
                     });
                 } catch (error) {
                     Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
@@ -637,16 +634,15 @@ export class StageS {
             settleLogs.firsttime = 0;
         }
         try {
-            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                Utils.logP12Info("A_LeaveChallenge", {
-                    timestamp: Date.now(),
-                    userId: player?.userId,
-                    roomId: roomInfo.roomId,
-                    stageId: this.id,
-                    level: this.stageCfg?.NameCN,
-                    movespeed: this.speedMultipler,
-                    ...settleLogs,
-                });
+            const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+            Utils.logP12Info("A_LeaveChallenge", {
+                timestamp: Date.now(),
+                userId: player?.userId,
+                roomId: roomInfo.roomId,
+                stageId: this.id,
+                level: this.stageCfg?.NameCN,
+                movespeed: this.speedMultipler,
+                ...settleLogs,
             });
         } catch (error) {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
@@ -710,56 +706,55 @@ export class StageS {
             // const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
             // const percent = maxWaveCount / allCount;
 
-            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                // 上报数据
-                const info: TDStageStatisticObj = {
-                    createTime: Date.now(), // 记录时间 number
-                    startTime: this.startTime, // 对局开始时间戳 number
-                    roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
-                    finish: time, // 秒
-                    gold: 0, // 奖励金币 number
-                    technology: 0, // 奖励科技 number
-                    exp: 0, // 奖励经验 number
-                    stamina: Utils.isInfiniteMode(stageConfig.groupIndex)
-                        ? 0
-                        : this.settleData.hasWin
-                        ? 0
-                        : GameServiceConfig.STAMINA_BACK_START_GAME, // 奖励体力 number
-                    world: (index + 1).toString(), // 1 ~ 5 | 6 无尽 string
-                    diff: (difficulty + 1).toString(), // 难度 string
-                    playId: `${roomInfo.roomId}-${this.id}`, // roomId + stagingId string
-                    status: this.settleData.hasWin ? (this._hp == this._maxHp ? "perfect" : "success") : "fail", // string
-                    home: `${this._hp}/${this._maxHp}`, // string
-                    detail: { cards, talent, dragonBlessList, nickName: player.nickname }, // 战队、祝福、天赋 TODO
-                };
+            const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
+            // 上报数据
+            const info: TDStageStatisticObj = {
+                createTime: Date.now(), // 记录时间 number
+                startTime: this.startTime, // 对局开始时间戳 number
+                roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
+                finish: time, // 秒
+                gold: 0, // 奖励金币 number
+                technology: 0, // 奖励科技 number
+                exp: 0, // 奖励经验 number
+                stamina: Utils.isInfiniteMode(stageConfig.groupIndex)
+                    ? 0
+                    : this.settleData.hasWin
+                    ? 0
+                    : GameServiceConfig.STAMINA_BACK_START_GAME, // 奖励体力 number
+                world: (index + 1).toString(), // 1 ~ 5 | 6 无尽 string
+                diff: (difficulty + 1).toString(), // 难度 string
+                playId: `${roomInfo.roomId}-${this.id}`, // roomId + stagingId string
+                status: this.settleData.hasWin ? (this._hp == this._maxHp ? "perfect" : "success") : "fail", // string
+                home: `${this._hp}/${this._maxHp}`, // string
+                detail: { cards, talent, dragonBlessList, nickName: player.nickname }, // 战队、祝福、天赋 TODO
+            };
 
-                for (let i = 0; i < rewards.length; i++) {
-                    let [id, amount] = rewards[i];
-                    let item = GameConfig.Item.getElement(id);
-                    if (item.itemType == 1) {
-                        // 金币
-                        info.gold = amount;
-                    } else if (item.itemType == 2) {
-                        // 卡牌
-                    } else if (item.itemType == 3) {
-                        // 科技点
-                        info.technology = amount;
-                    } else if (item.itemType == 4) {
-                        // 经验
-                        info.exp = amount;
-                    }
+            for (let i = 0; i < rewards.length; i++) {
+                let [id, amount] = rewards[i];
+                let item = GameConfig.Item.getElement(id);
+                if (item.itemType == 1) {
+                    // 金币
+                    info.gold = amount;
+                } else if (item.itemType == 2) {
+                    // 卡牌
+                } else if (item.itemType == 3) {
+                    // 科技点
+                    info.technology = amount;
+                } else if (item.itemType == 4) {
+                    // 经验
+                    info.exp = amount;
                 }
-                ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
-                if (Utils.isInfiniteMode(stageConfig.groupIndex)) {
-                    const rankInfo: UpdateTDRankDataNeedFill = {
-                        roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
-                        finish: time,
-                        recordTime: Date.now(), // 记录时间 number
-                        detail: cards,
-                    };
-                    ModuleService.getModule(AuthModuleS)?.reportTDRankData(player.playerId, rankInfo);
-                }
-            });
+            }
+            ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
+            if (Utils.isInfiniteMode(stageConfig.groupIndex)) {
+                const rankInfo: UpdateTDRankDataNeedFill = {
+                    roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
+                    finish: time,
+                    recordTime: Date.now(), // 记录时间 number
+                    detail: cards,
+                };
+                ModuleService.getModule(AuthModuleS)?.reportTDRankData(player.playerId, rankInfo);
+            }
         } catch (error) {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
         }
