@@ -196,6 +196,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.save(false);
     }
 
+    public net_saveEffectSetting(attackEffect: number, attackDamage: number) {
+        this.currentData.attackEffect = attackEffect;
+        this.currentData.attackDamage = attackDamage;
+        this.currentData.save(false);
+    }
+
     public net_saveLightTowerCount(sum: number, daily: number) {
         const data = this.currentData;
         const player = this.currentPlayer;
@@ -705,6 +711,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public getUserRoomInfo(userId: string) {
-       return  this.userRoomInfo.get(userId);
+        return this.userRoomInfo.get(userId);
     }
 }

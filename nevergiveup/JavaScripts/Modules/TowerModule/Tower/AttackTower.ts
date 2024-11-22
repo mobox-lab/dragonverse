@@ -18,6 +18,7 @@ import TowerBase from "./TowerBase";
 import AssetUtil = mw.AssetUtil;
 import Gtk from "gtoolkit";
 import { FlyingComponent } from "../../../enemy/components/FlyingComponent";
+import PlayerModuleData from "../../PlayerModule/PlayerModuleData";
 
 export default class AttackTower extends TowerBase {
     public get outputStr(): string {
@@ -187,6 +188,8 @@ export default class AttackTower extends TowerBase {
     public makeDamage(enemys: Enemy[]) {
         // 造成伤害
         const level = this.level;
+        const attackEffect = DataCenterC.getData(PlayerModuleData).attackEffect;
+        console.log(attackEffect, "attackEffect");
         if (this.property.attackRange) {
             // AOE
             for (let enemy of enemys) {
@@ -215,12 +218,14 @@ export default class AttackTower extends TowerBase {
                         damage = i.onHurt(this);
                     }
                     this.onDamage(damage);
-                    // const vScale = this.cfg.hitEffect * 2;
-                    // CycleUtil.playEffectOnPosition(
-                    //     this.cfg.attackEffect,
-                    //     enemy.position,
-                    //     Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
-                    // );
+                    if (attackEffect > 0) {
+                        const vScale = this.cfg.hitEffect * 2;
+                        CycleUtil.playEffectOnPosition(
+                            this.cfg.attackEffect,
+                            enemy.position,
+                            Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
+                        );
+                    }
                 }
             }
         } else {
@@ -243,12 +248,14 @@ export default class AttackTower extends TowerBase {
                     damage = enemy.onHurt(this);
                 }
                 this.onDamage(damage);
-                // const vScale = this.cfg.hitEffect * 2;
-                // CycleUtil.playEffectOnPosition(
-                //     this.cfg.attackEffect,
-                //     enemy.position,
-                //     Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
-                // );
+                if (attackEffect > 0) {
+                    const vScale = this.cfg.hitEffect * 2;
+                    CycleUtil.playEffectOnPosition(
+                        this.cfg.attackEffect,
+                        enemy.position,
+                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
+                    );
+                }
             }
         }
     }
