@@ -70,6 +70,7 @@ export default abstract class TowerBase implements BuffBag {
     isWarmUp: boolean = false;
 
     private async setLevelEffect(ids: number[]) {
+        return
         try {
             // 卸载旧特效
             this._levelShow.forEach((go) => go?.destroy());
