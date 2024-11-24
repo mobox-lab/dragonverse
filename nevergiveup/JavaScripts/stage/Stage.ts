@@ -990,7 +990,13 @@ export class StageC {
             } else if (this.state == EStageState.Wait) {
                 this.duration = param[0];
                 let mainUI = UIService.getUI(UIMain);
+                const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
                 if (!mainUI.visible) {
+                    if (Utils.isInfiniteMode(stageConfig.groupIndex)) {
+                        mainUI.hideReturn();
+                    }else{
+                        mainUI.showReturn();
+                    }
                     UIService.show(UIMain);
                 }
                 UIService.hide(LobbyUI);
