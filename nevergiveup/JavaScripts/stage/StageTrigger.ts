@@ -284,7 +284,7 @@ export default class StageTrigger extends Script {
                 );
                 return false;
             } else {
-                Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
+                Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`, `startGame groupIndex:${groupIndex}`);
                 if (Utils.isInfiniteMode(groupIndex)) {
                     // 无尽模式直接开始
                     if (
