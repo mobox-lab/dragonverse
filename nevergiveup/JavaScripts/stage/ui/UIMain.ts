@@ -195,6 +195,13 @@ export class UIMain extends MainUI_Generate {
         }
     }
 
+    hideReturn() {
+        this.returnCanvas.visibility = SlateVisibility.Collapsed;
+    }
+    showReturn() {
+        this.returnCanvas.visibility = SlateVisibility.Visible;
+    }
+
     private initCompont() {
         StageActions.onGoldChanged.add((v: number) => {
             this.goldTxt.text = v.toFixed();
