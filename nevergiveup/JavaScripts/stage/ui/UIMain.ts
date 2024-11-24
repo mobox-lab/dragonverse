@@ -23,7 +23,7 @@ import MainUI_Generate from "../../ui-generate/HUD/MainUI_generate";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { EnergyModuleC } from "../../Modules/Energy/EnergyModule";
 import { WaveUtil } from "../Wave";
-import { StageC } from "../Stage";
+import { StageC, StageUtil } from "../Stage";
 import { GlobalData } from "../../const/GlobalData";
 import Utils from "../../Utils";
 import MonsterSkillsItem_Generate from "../../ui-generate/HUD/MonsterSkillsItem_generate";
@@ -454,6 +454,12 @@ export class UIMain extends MainUI_Generate {
 
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.T, () => {
+            const stage = GameManager.getStageClient();
+            const stageCfgId = stage.stageCfgId;
+            const stageConfig = StageUtil.getStageCfgById(stageCfgId);
+            if (Utils.isInfiniteMode(stageConfig.groupIndex)) {
+                return;
+            }
             mw.UIService.show(ReturnUI);
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
