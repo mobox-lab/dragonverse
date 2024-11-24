@@ -49,17 +49,17 @@ export default class GameServiceConfig {
     /**
      * 进入大世界关卡消耗体力值
      */
-    public static readonly STAMINA_COST_START_GAME = 20;
+    public static readonly STAMINA_COST_START_GAME = 100;
 
     /**
      * 进入无尽关卡消耗体力值
      */
-    public static readonly STAMINA_COST_START_INFINITE = 10;
+    public static readonly STAMINA_COST_START_INFINITE = 50;
 
     /**
      * 大世界关卡失败返回体力数
      */
-    public static readonly STAMINA_BACK_START_GAME = 10;
+    public static readonly STAMINA_BACK_START_GAME = 80;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
