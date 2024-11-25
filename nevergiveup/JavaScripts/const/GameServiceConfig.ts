@@ -54,7 +54,7 @@ export default class GameServiceConfig {
     /**
      * 进入无尽关卡消耗体力值
      */
-    public static readonly STAMINA_COST_START_INFINITE = 50;
+    public static readonly STAMINA_COST_START_INFINITE = 10;
 
     /**
      * 大世界关卡失败返回体力数
