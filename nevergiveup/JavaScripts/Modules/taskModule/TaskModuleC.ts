@@ -125,7 +125,8 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
 
     protected onStart(): void {
         TimerModuleUtils.addOnlineDayListener(() => this.checkClearFinishDailyTask(), this);
-        TimerModuleUtils.addLoginDayListener(() => this.checkClearFinishDailyTask(), this);
+        // TimerModuleUtils.addLoginDayListener(() => this.checkClearFinishDailyTask(), this);
+        this.checkClearFinishDailyTask();
     }
 
     /**
