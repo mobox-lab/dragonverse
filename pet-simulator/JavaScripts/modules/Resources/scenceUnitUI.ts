@@ -90,7 +90,8 @@ export class resourceUI {
     reset(): void {
         this.bar_Type = null;
         this.ui.parent = null;
-        this.ui.setVisibility(mw.PropertyStatus.Off);
+        // this.ui.setVisibility(mw.PropertyStatus.Off);
+        this.ui.destroy()
     }
 
     public bindObj(resGuid: string, cfgId: number, curHp: number, rate: number) {
