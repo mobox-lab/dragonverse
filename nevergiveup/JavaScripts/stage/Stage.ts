@@ -156,6 +156,7 @@ export class StageS {
             const roomInfo = ModuleService.getModule(PlayerModuleS).getUserRoomInfo(player.userId);
             if (!roomInfo?.roomId) {
                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                    ModuleService.getModule(PlayerModuleS).setUserRoomInfo(player.userId, roomInfo);
                     Utils.logP12Info("A_StartStage", {
                         timestamp: Date.now(),
                         userId: player?.userId,
