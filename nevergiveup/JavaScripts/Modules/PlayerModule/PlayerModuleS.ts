@@ -305,8 +305,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveInfinityWaveTimes(times: number) {
-        const v = Math.max(times, this.currentData.infinityWaveTimes);
-        this.currentData.infinityWaveTimes = v;
+        this.currentData.infinityWaveTimes = times;
         this.currentData.save(false);
     }
 
