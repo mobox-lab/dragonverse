@@ -305,10 +305,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_saveInfinityWaveTimes(times: number) {
-        if (times > this.currentData.infinityWaveTimes) {
-            this.currentData.infinityWaveTimes = times;
-            this.currentData.save(false);
-        }
+        this.currentData.infinityWaveTimes = times;
+        this.currentData.save(false);
     }
 
     public net_saveLevelThreeCount(sum: number, daily: number) {
