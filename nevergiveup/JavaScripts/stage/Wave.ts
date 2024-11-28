@@ -540,7 +540,7 @@ export class WaveUtil {
                                 enemies: newEnemies,
                                 // escapeDamagePercent: escapeDamagePercent,
                                 armor: waveValue.armor,
-                                magicReduction: waveValue.magicReduction,
+                                magic: waveValue.magic,
                                 waveGold: 0,
                             };
                         });
