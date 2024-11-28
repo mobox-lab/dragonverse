@@ -18,6 +18,7 @@ import {TaskConfig} from "./Task";
 import {TechTreeConfig} from "./TechTree";
 import {TowerConfig} from "./Tower";
 import {VoiceConfig} from "./Voice";
+import {WaveConfig} from "./Wave";
 
 export class GameConfig{
 	private static configMap:Map<string, ConfigBase<IElementBase>> = new Map();
@@ -55,4 +56,5 @@ export class GameConfig{
 	public static get TechTree():TechTreeConfig{ return this.getConfig(TechTreeConfig) };
 	public static get Tower():TowerConfig{ return this.getConfig(TowerConfig) };
 	public static get Voice():VoiceConfig{ return this.getConfig(VoiceConfig) };
+	public static get Wave():WaveConfig{ return this.getConfig(WaveConfig) };
 }

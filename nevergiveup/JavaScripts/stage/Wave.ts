@@ -475,6 +475,27 @@ export class WaveUtil {
         }
     }
 
+    calculateWaveValue(wave: number) {
+        const increments = [6, 6, 10, 10, 15];
+        let result = 1; // 初始值为1
+        wave--; // 从0开始计数
+
+        // 计算完整周期
+        const fullCycles = Math.floor(wave / increments.length);
+        const remainingSteps = wave % increments.length;
+
+        // 完整周期的增量
+        const fullCycleIncrement = increments.reduce((sum, value) => sum + value, 0);
+        result += fullCycles * fullCycleIncrement;
+
+        // 剩余步骤的增量
+        for (let i = 0; i < remainingSteps; i++) {
+            result += increments[i];
+        }
+
+        return result;
+    }
+
     newCalculateWave(wave: number, execute: boolean, stageId: number) {
         if (execute) {
             if (SystemUtil.isClient()) {
@@ -492,24 +513,34 @@ export class WaveUtil {
                     if (Array.isArray(waves)) {
                         let newWaves: WaveConfig[] = waves;
                         const times = this.waveTimes;
+
+                        console.log(`Wave times ${times}: ${this.calculateWaveValue(times + 1)}`);
+                        const waveIndex = this.calculateWaveValue(times + 1);
+                        let waveValue = GameConfig.Wave.getElement(waveIndex);
+                        if (!waveValue) {
+                            waveValue = GameConfig.Wave.getElement(300);
+                        }
                         newWaves = waves.map((item) => {
                             const newEnemies = item.enemies.map((enemy) => {
-                                const spawnInterval = enemy.spawnInterval * Math.pow(0.85, times);
+                                const spawnInterval = enemy.spawnInterval * waveValue.spawnInterval;
                                 return {
                                     ...enemy,
-                                    count: Math.floor(enemy.count * Math.pow(1.13, times)),
+                                    count: Math.floor(enemy.count * waveValue.count),
                                     spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
                                 };
                             });
-                            const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.85, times);
+                            const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * waveValue.waveTime;
                             // const escapeDamagePercent = 1 * Math.pow(1.2, times);
+
                             const hpX = 0.5;
                             return {
                                 ...item,
                                 waveTime: waveTime > 10 ? Number(waveTime.toFixed(0)) : 10,
-                                hpMultiplier: 1 * Math.pow(1.5, times) * hpX * item.hpMultiplier,
+                                hpMultiplier: 1 * waveValue.hp * hpX * item.hpMultiplier,
                                 enemies: newEnemies,
                                 // escapeDamagePercent: escapeDamagePercent,
+                                armor: waveValue.armor,
+                                magic: waveValue.magic,
                                 waveGold: 0,
                             };
                         });

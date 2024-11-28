@@ -117,12 +117,16 @@ export class Enemy implements BuffBag {
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
         this.hp = config.hp * difficlutyMutliplier * multiplayerMultiplier * waveMultiplier;
-        this.armor = config.armor || 200;
-        this.magicResist = config.magicResist || 200;
+        const armorPercent = waveConfig?.armor || 1;
+        const magicPercent = waveConfig?.magic || 1;
+        this.armor = (config.armor || 200) * armorPercent;
+        this.magicResist = (config.magicResist || 200) * magicPercent;
+        console.log("Enemy data: armor magicResist hp", this.armor, this.magicResist, this.hp);
         this.hpMax = this.hp;
         this.speed = config.speed;
         this.hurtAmount = 0;
         const escapeDamagePercent = waveConfig?.escapeDamagePercent || 1;
+
         this.escapeDamage = Math.floor(config.escapeDamage * escapeDamagePercent);
         this.goldAmount = config.goldAmount;
         this.name = config.name;

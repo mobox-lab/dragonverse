@@ -25,6 +25,8 @@ export type WaveConfig = {
     waveTime: number;
     hpMultiplier: number;
     escapeDamagePercent?: number;
+    armor?: number;
+    magic?: number;
     airDrop?: AirDropConifg;
 };
 
