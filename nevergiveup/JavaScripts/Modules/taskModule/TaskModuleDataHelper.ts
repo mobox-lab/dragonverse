@@ -57,6 +57,7 @@ export class TaskModuleDataHelper extends Subdata {
         if(this.lastDailyTaskRefreshTimestamp) {
             const preTime = this.lastDailyTaskRefreshTimestamp;
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
+            console.log("#debug judgeIsNewDay isNewDay:", isNewDay)
             if(isNewDay) {
                 this.clearAllDaily(player, nowTime);
                 return true;

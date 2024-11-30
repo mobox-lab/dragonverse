@@ -246,22 +246,6 @@ export namespace TimerModuleUtils {
      * @returns 是否是新的一天
      */
     export function judgeIsNewDay(oldTime: number, newTime: number, utcHour = 8): boolean {
-        // if (!oldTime || !newTime) return false;
-
-        // // oldTime 和 newTime 都为 UTC 时间戳
-        // const oldDate = dayjs.utc(oldTime);
-        // const newDate = dayjs.utc(newTime);
-
-        // // 直接比较两个时间的小时数是否不同
-        // const oldHour = oldDate.hour();
-        // const newHour = newDate.hour();
-
-        // console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
-
-        // // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
-        // return newHour !== oldHour;
-        // // TODO: 先改成每小时重置方便测试
-
         if (!oldTime || !newTime) return false;
         // oldTime 和 newTime 都为 UTC 时间戳
         const oldDate = dayjs.utc(oldTime);
@@ -276,11 +260,11 @@ export namespace TimerModuleUtils {
             return oldDate.hour() < utcHour && newDate.hour() >= utcHour
 
         // is not same day
-        if(oldDate.diff(newDate, 'd') > 1) return true;
-        
+        if(newDate.diff(oldDate, 'd') > 1) return true;
+
         // 昨天和今天
         if(oldDate.hour() >= utcHour && newDate.hour() < utcHour) return false;
-        
+
         return true;
     }
 
