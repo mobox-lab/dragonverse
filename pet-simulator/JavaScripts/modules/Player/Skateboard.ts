@@ -54,7 +54,8 @@ export class Skateboard {
     public unEquipBoard(char: mw.Character, curChar: mw.Character) {
         if (!this.skateboardObj) return;
         this.skateboardObj.parent = null;
-        GameObjPool.despawn(this.skateboardObj);
+        this.skateboardObj.destroy();
+        // GameObjPool.despawn(this.skateboardObj);
         EffectService.stop(this.effectPlayId);
         this.animation?.stop();
         this.changeProperty(char, curChar, false);

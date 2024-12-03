@@ -522,7 +522,8 @@ class DropInClient extends DropItem {
         this.model.stop();
         // this._value = 0;
         // this._diamond = 0;
-        GameObjPool.despawn(this.model);
+        // GameObjPool.despawn(this.model);
+        this.model.destroy();
         clearTimeout(this.autoDestroyTimer);
         this.timeout = false;
     }

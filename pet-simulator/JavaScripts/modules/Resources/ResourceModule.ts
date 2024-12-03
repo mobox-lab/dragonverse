@@ -33,7 +33,8 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
             if (this.breakCount == 3) {
                 this.uis.forEach((item) => {
                     item.parent = null;
-                    GameObjPool.despawn(item);
+                    // GameObjPool.despawn(item);
+                    item.destroy();
                 });
             }
         });

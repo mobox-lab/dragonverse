@@ -249,7 +249,8 @@ export default class PetBehavior {
             this._wing.destroy();
         }
         HUDManager.instance.recHUDInfo(this.pet.gameObjectId);
-        GameObjPool.despawn(this.pet);
+        // GameObjPool.despawn(this.pet);
+        this.pet.destroy();
         this.pet = null;
         this.owner = null;
         this.isReady = false;
