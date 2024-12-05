@@ -617,6 +617,97 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mSelectDifficulty_Internal
 	}
+	private speedSweep_btnGroup_Internal: mw.Canvas
+	public get speedSweep_btnGroup(): mw.Canvas {
+		if(!this.speedSweep_btnGroup_Internal&&this.uiWidgetBase) {
+			this.speedSweep_btnGroup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup') as mw.Canvas
+		}
+		return this.speedSweep_btnGroup_Internal
+	}
+	private sweepText_Internal: mw.TextBlock
+	public get sweepText(): mw.TextBlock {
+		if(!this.sweepText_Internal&&this.uiWidgetBase) {
+			this.sweepText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/sweepText') as mw.TextBlock
+		}
+		return this.sweepText_Internal
+	}
+	private refreshBtn_Internal: mw.Button
+	public get refreshBtn(): mw.Button {
+		if(!this.refreshBtn_Internal&&this.uiWidgetBase) {
+			this.refreshBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/refreshBtn') as mw.Button
+		}
+		return this.refreshBtn_Internal
+	}
+	private iconSweep_Internal: mw.Image
+	public get iconSweep(): mw.Image {
+		if(!this.iconSweep_Internal&&this.uiWidgetBase) {
+			this.iconSweep_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/iconSweep') as mw.Image
+		}
+		return this.iconSweep_Internal
+	}
+	private imageInterval_Internal: mw.Image
+	public get imageInterval(): mw.Image {
+		if(!this.imageInterval_Internal&&this.uiWidgetBase) {
+			this.imageInterval_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/imageInterval') as mw.Image
+		}
+		return this.imageInterval_Internal
+	}
+	private iconRefreshBtn_Internal: mw.Image
+	public get iconRefreshBtn(): mw.Image {
+		if(!this.iconRefreshBtn_Internal&&this.uiWidgetBase) {
+			this.iconRefreshBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/iconRefreshBtn') as mw.Image
+		}
+		return this.iconRefreshBtn_Internal
+	}
+	private sweepBalance_Internal: mw.TextBlock
+	public get sweepBalance(): mw.TextBlock {
+		if(!this.sweepBalance_Internal&&this.uiWidgetBase) {
+			this.sweepBalance_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/sweepBalance') as mw.TextBlock
+		}
+		return this.sweepBalance_Internal
+	}
+	private canvasNumber_Internal: mw.Canvas
+	public get canvasNumber(): mw.Canvas {
+		if(!this.canvasNumber_Internal&&this.uiWidgetBase) {
+			this.canvasNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/canvasNumber') as mw.Canvas
+		}
+		return this.canvasNumber_Internal
+	}
+	private imageBtnBg_Internal: mw.Image
+	public get imageBtnBg(): mw.Image {
+		if(!this.imageBtnBg_Internal&&this.uiWidgetBase) {
+			this.imageBtnBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/canvasNumber/imageBtnBg') as mw.Image
+		}
+		return this.imageBtnBg_Internal
+	}
+	private btnMinus_Internal: mw.Button
+	public get btnMinus(): mw.Button {
+		if(!this.btnMinus_Internal&&this.uiWidgetBase) {
+			this.btnMinus_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/canvasNumber/btnMinus') as mw.Button
+		}
+		return this.btnMinus_Internal
+	}
+	private btnAdd_Internal: mw.Button
+	public get btnAdd(): mw.Button {
+		if(!this.btnAdd_Internal&&this.uiWidgetBase) {
+			this.btnAdd_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/canvasNumber/btnAdd') as mw.Button
+		}
+		return this.btnAdd_Internal
+	}
+	private sweepNumber_Internal: mw.TextBlock
+	public get sweepNumber(): mw.TextBlock {
+		if(!this.sweepNumber_Internal&&this.uiWidgetBase) {
+			this.sweepNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/canvasNumber/sweepNumber') as mw.TextBlock
+		}
+		return this.sweepNumber_Internal
+	}
+	private mSweep_Internal: mw.StaleButton
+	public get mSweep(): mw.StaleButton {
+		if(!this.mSweep_Internal&&this.uiWidgetBase) {
+			this.mSweep_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/speedSweep_btnGroup/mSweep') as mw.StaleButton
+		}
+		return this.mSweep_Internal
+	}
 	private can_btnGroup_Internal: mw.Canvas
 	public get can_btnGroup(): mw.Canvas {
 		if(!this.can_btnGroup_Internal&&this.uiWidgetBase) {
@@ -678,6 +769,13 @@ export default class StageSelect_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
+	   this.mSweep.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mSweep");
+	   })
+	   this.initLanguage(this.mSweep);
+	   this.mSweep.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.mGo.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mGo");
 	   })
@@ -735,6 +833,24 @@ export default class StageSelect_Generate extends UIScript {
 		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_5");
 	   })
 	   this.btn_monsterSkill_5.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.refreshBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "refreshBtn");
+	   })
+	   this.refreshBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.btnMinus.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btnMinus");
+	   })
+	   this.btnMinus.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.btnAdd.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btnAdd");
+	   })
+	   this.btnAdd.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 
@@ -821,6 +937,15 @@ export default class StageSelect_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.textModragon)
+	   
+	
+	   this.initLanguage(this.sweepText)
+	   
+	
+	   this.initLanguage(this.sweepBalance)
+	   
+	
+	   this.initLanguage(this.sweepNumber)
 	   
 	
 	   this.initLanguage(this.textElementCounter)

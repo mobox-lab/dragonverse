@@ -121,6 +121,29 @@ export class UIStageSelect extends StageSelect_Generate {
             }, 1000);
         });
 
+        this.mSweep.onClicked.add(() => {
+            this.resetLeaveGameCountDown();
+            this._script.changeOwnerByClick(Player.localPlayer.playerId);
+            setTimeout(() => {
+                if (Utils.isLocalPlayer(this._ownerId)) {
+                    const stageC = GameManager.getStageClient();
+                    if (stageC) {
+                        console.log("game is already exist");
+                        // game is already exist
+                    } else {
+                        const res = this._script.sweepGame(Player.localPlayer.playerId);
+                        if (res) {
+                            TimeUtil.delayExecute(() => {
+                                this._script.resetUserPosition(Player.localPlayer);
+                            }, 50);
+                        }
+                    }
+                } else {
+                    TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
+                }
+            }, 1000);
+        });
+
         this.mClose.onClicked.add(this.leaveGame.bind(this));
 
         this.mOff.onClicked.add(this.leaveGame.bind(this));
@@ -291,9 +314,12 @@ export class UIStageSelect extends StageSelect_Generate {
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         const stageCfgId = stageCfg.id;
-        if (stageWorldIndex === 5 || stageWorldIndex === 6) {
+        if (Utils.isInfiniteOrTrainingMode(stageCfg.groupIndex)) {
             this._difficulty = [];
             this.mSelectDifficulty.removeAllChildren();
+            this.speedSweep_btnGroup.visibility = SlateVisibility.Hidden;
+        } else {
+            this.speedSweep_btnGroup.visibility = SlateVisibility.Visible;
         }
         // 通关奖励
         this.setRewardsUI(stageCfg);
