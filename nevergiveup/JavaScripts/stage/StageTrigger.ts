@@ -18,6 +18,7 @@ import { GlobalEventName } from "../const/enum";
 import Log4Ts from "mw-log4ts";
 import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
+import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
 
 export namespace StageTriggerInst {
     export let posMap: { [stageId: number]: Vector } = {};
@@ -325,6 +326,78 @@ export default class StageTrigger extends Script {
                     ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
                     GameManager.startGame(ids, this.stageCfgId);
                     return true;
+                }
+            }
+        }
+    }
+
+    @mw.RemoteFunction(mw.Server)
+    sweepGame(playerID: number) {
+        if (playerID == this.owner) {
+            // let ids = this.parsePlayerIds().splice(0, 4);
+            const stageInfo = StageUtil.getCfgFromGroupIndexAndDifficulty(
+                this.stageWorldIndex,
+                this.stageGroupId,
+                this.difficulty
+            );
+            this.stageCfgId = stageInfo?.id;
+            const ids = [this.owner];
+            const stages = GameManager.getStages();
+            const allGroupIndex = stages.map((stage) => stage.stageCfg.groupIndex);
+            const isAlreadyUsed = allGroupIndex.includes(stageInfo.groupIndex);
+            const groupIndex = stageInfo.groupIndex;
+            const player = Player.getPlayer(playerID);
+            if (isAlreadyUsed && groupIndex !== 10056 && groupIndex !== 10057) {
+                mw.Event.dispatchToClient(
+                    player,
+                    GlobalEventName.ServerTipsEventName,
+                    GameConfig.Language.getElement("Text_stageAlreadyUsed").Value
+                );
+                return false;
+            } else {
+                Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`, `startGame groupIndex:${groupIndex}`);
+                if (Utils.isInfiniteMode(groupIndex)) {
+                    // 无尽模式不可以执行
+                    return false;
+                } else {
+                    // todo 扫荡的次数
+                    try {
+                        const firstPerfectClears = DataCenterS.getData(player, PlayerModuleData).firstPerfectClears;
+                        const unique = Number(stageInfo.index.toString() + stageInfo.difficulty.toString());
+                        if (!firstPerfectClears.includes(unique)) {
+                            mw.Event.dispatchToClient(
+                                player,
+                                GlobalEventName.ServerTipsEventName,
+                                GameConfig.Language.getElement("Stage_Select_7").Value
+                            );
+                            return false;
+                        } else {
+                            const times = 1;
+                            if (
+                                !ModuleService.getModule(EnergyModuleS).isAfford(
+                                    playerID,
+                                    GameServiceConfig.STAMINA_COST_START_GAME * times
+                                )
+                            ) {
+                                Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+                                mw.Event.dispatchToClient(
+                                    Player.getPlayer(playerID),
+                                    GlobalEventName.ServerTipsEventName,
+                                    GameConfig.Language.getElement("Text_insufficientStamina").Value
+                                );
+                                return false;
+                            }
+                            ModuleService.getModule(EnergyModuleS).consume(
+                                playerID,
+                                GameServiceConfig.STAMINA_COST_START_GAME * times
+                            );
+                            // todo 显示结算 发放奖励
+                            GameManager.sweepGame(ids, this.stageCfgId, times);
+                            return true;
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
             }
         }

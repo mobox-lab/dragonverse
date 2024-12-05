@@ -32,6 +32,8 @@ import BuildItemUI from "./UI/BuildItemUI";
 import { GlobalData } from "./const/GlobalData";
 import { TowerModuleC } from "./Modules/TowerModule/TowerModuleC";
 import { DragonDataModuleS } from "./Modules/dragonData/DragonDataModuleS";
+import { SettleData, UISettle } from "./stage/ui/UISettle";
+import { AirdropManager } from "./Airdrop/AirdropManager";
 
 export const ChatType = {
     Text: 1,
@@ -173,6 +175,10 @@ export namespace GameManager {
             // RankManager.init();
             UIService.show(TowerUI);
             initNoticeBoard();
+
+            Event.addServerListener("onSweepEnd", (settleData: SettleData) => {
+                UIService.show(UISettle, settleData);
+            });
 
             Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
                 const stageState: StageState = JSON.parse(state);
@@ -329,6 +335,70 @@ export namespace GameManager {
             }
         }
     }
+
+    export function sweepGame(playerIds: number[], stageCfgId: number, times: number) {
+        let gamePlayers = playerIds.map((playerId) => Player.getPlayer(playerId));
+        let validGamePlayers = gamePlayers.filter((player) => players.indexOf(player) != -1);
+        if (validGamePlayers.length == 0) return;
+        const player = validGamePlayers[0];
+        try {
+            const stageCfg = GameConfig.Stage.getElement(stageCfgId);
+            const rewards = stageCfg.followRewardPerfect;
+            const rewardsData = [];
+            for (let i = 0; i < rewards.length; i++) {
+                let [id, amount] = rewards[i];
+                let item = GameConfig.Item.getElement(id);
+                if (item.itemType == 1) {
+                    // 金币
+                    rewardsData.push({ guid: item.itemImgGuid, amount: amount * times, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeGold(player, amount * times);
+                } else if (item.itemType == 2) {
+                    // 卡牌
+                    let card = GameConfig.Tower.getElement(item.itemTypeid);
+                    // 实际添加卡牌
+                    // 判断卡牌是否已经存在
+                    const cards = ModuleService.getModule(CardModuleS).getPlayerUnlockCards(player) || [];
+                    const gold = GameConfig.Item.getElement(1);
+                    if (cards.includes(card.id)) {
+                        // 已经存在，给钱
+                        rewardsData.push({ guid: gold.itemImgGuid, amount: 1000 * times, type: gold.itemType });
+                        ModuleService.getModule(PlayerModuleS).changeGold(player, 1000 * times);
+                    } else {
+                        rewardsData.push({ guid: card.iconGuid, amount: amount, type: item.itemType });
+                        rewardsData.push({ guid: gold.itemImgGuid, amount: 1000 * (times - 1), type: gold.itemType });
+                        ModuleService.getModule(CardModuleS).giveCard(player, card.id);
+                        ModuleService.getModule(PlayerModuleS).changeGold(player, 1000 * (times - 1));
+                    }
+                } else if (item.itemType == 3) {
+                    // 科技点
+                    rewardsData.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeTechPoint(player, amount * times);
+                } else if (item.itemType == 4) {
+                    // 经验
+                    rewardsData.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    ModuleService.getModule(PlayerModuleS).changeExp(player, amount * times);
+                }
+            }
+            const rewardGuids = rewardsData.map((reward) => reward.guid);
+            const rewardAmounts = rewardsData.map((reward) => reward.amount);
+            const rewardTypes = rewardsData.map((reward) => reward.type);
+            let settleData: SettleData = {
+                hasWin: true,
+                isFirst: false,
+                isPerfect: true,
+                time: 0,
+                waves: 0,
+                wavesMax: 0,
+                reward: rewardGuids.map((guid, index) => {
+                    return { guid: guid, amount: rewardAmounts[index], type: rewardTypes[index] };
+                }),
+            };
+            Event.dispatchToClient(player, "onSweepEnd", settleData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     export function getScript(): GameStart {
         return script;
     }
