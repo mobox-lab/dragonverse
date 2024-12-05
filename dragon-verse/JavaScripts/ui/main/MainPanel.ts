@@ -577,14 +577,14 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.btnShop);
-        this.btnShop.onClicked.add(() => {
-            if (UIService.getUI(P12ShopPanel)?.isShowing) {
-                UIService.hide(P12ShopPanel);
-            } else {
-                UIService.show(P12ShopPanel);
-            }
-        })
+        // KeyOperationManager.getInstance().bindButton(this, Keys.H, this.btnShop);
+        // this.btnShop.onClicked.add(() => {
+        //     if (UIService.getUI(P12ShopPanel)?.isShowing) {
+        //         UIService.hide(P12ShopPanel);
+        //     } else {
+        //         UIService.show(P12ShopPanel);
+        //     }
+        // })
 
         this.init();
         //#endregion ------------------------------------------------------------------------------------------

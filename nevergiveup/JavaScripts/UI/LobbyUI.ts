@@ -110,13 +110,13 @@ export default class LobbyUI extends LobbyUI_Generate {
             }
         });
 
-        this.shopBtn.onClicked.add(() => {
-            if (UIService.getUI(P12ShopPanel)?.isShowing) {
-                UIService.hide(P12ShopPanel);
-            } else {
-                UIService.show(P12ShopPanel);
-            }
-        });
+        // this.shopBtn.onClicked.add(() => {
+        //     if (UIService.getUI(P12ShopPanel)?.isShowing) {
+        //         UIService.hide(P12ShopPanel);
+        //     } else {
+        //         UIService.show(P12ShopPanel);
+        //     }
+        // });
 
         this.addBtn.onClicked.add(() => {
             UIService.show(SenzuBeanConfirmPanel);
@@ -213,7 +213,7 @@ export default class LobbyUI extends LobbyUI_Generate {
     protected onShow() {
         // 打开商店
         KeyOperationManager.getInstance().bindButton(this, Keys.T, this.returnBtn);
-        KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
+        // KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
         // KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
         //     if (GameManager.getStageClient()) {
         //         return;
