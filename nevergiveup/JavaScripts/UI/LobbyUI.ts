@@ -171,7 +171,7 @@ export default class LobbyUI extends LobbyUI_Generate {
     }
 
     public showTaskPanel() {
-        if (!Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel)) return;
+        // if (!Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel)) return;
         const ui = UIService.getUI(UI_TaskMain);
         if (ui.visible) ui.hide();
         else ui.show();
