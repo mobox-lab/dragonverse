@@ -80,9 +80,9 @@ export default class UI_TaskMain extends TaskMain_Generate {
             this.btnState = EmTaskType.Main;
         });
         this.dailyTaskBtn.onClicked.add(() => {
-            if (Utils.checkLevel(GameConfig.Global.getElement(1).unlockDailyTask)) {
+            // if (Utils.checkLevel(GameConfig.Global.getElement(1).unlockDailyTask)) {
                 this.btnState = EmTaskType.Daily;
-            }
+            // }
         });
     }
 

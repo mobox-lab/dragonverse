@@ -368,7 +368,7 @@ export default class StageTrigger extends Script {
                             mw.Event.dispatchToClient(
                                 player,
                                 GlobalEventName.ServerTipsEventName,
-                                GameConfig.Language.getElement("Stage_Select_7").Value
+                                GameConfig.Language.getElement("Stage_Select_8").Value
                             );
                             return false;
                         } else {
