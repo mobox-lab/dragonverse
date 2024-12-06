@@ -332,7 +332,7 @@ export default class StageTrigger extends Script {
     }
 
     @mw.RemoteFunction(mw.Server)
-    sweepGame(playerID: number) {
+    sweepGame(playerID: number, times: number) {
         if (playerID == this.owner) {
             // let ids = this.parsePlayerIds().splice(0, 4);
             const stageInfo = StageUtil.getCfgFromGroupIndexAndDifficulty(
@@ -361,42 +361,37 @@ export default class StageTrigger extends Script {
                     return false;
                 } else {
                     // todo 扫荡的次数
-                    try {
-                        const firstPerfectClears = DataCenterS.getData(player, PlayerModuleData).firstPerfectClears;
-                        const unique = Number(stageInfo.index.toString() + stageInfo.difficulty.toString());
-                        if (!firstPerfectClears.includes(unique)) {
-                            mw.Event.dispatchToClient(
-                                player,
-                                GlobalEventName.ServerTipsEventName,
-                                GameConfig.Language.getElement("Stage_Select_8").Value
-                            );
-                            return false;
-                        } else {
-                            const times = 1;
-                            if (
-                                !ModuleService.getModule(EnergyModuleS).isAfford(
-                                    playerID,
-                                    GameServiceConfig.STAMINA_COST_START_GAME * times
-                                )
-                            ) {
-                                Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
-                                mw.Event.dispatchToClient(
-                                    Player.getPlayer(playerID),
-                                    GlobalEventName.ServerTipsEventName,
-                                    GameConfig.Language.getElement("Text_insufficientStamina").Value
-                                );
-                                return false;
-                            }
-                            ModuleService.getModule(EnergyModuleS).consume(
+                    const firstPerfectClears = DataCenterS.getData(player, PlayerModuleData).firstPerfectClears;
+                    const unique = Number(stageInfo.index.toString() + stageInfo.difficulty.toString());
+                    if (!firstPerfectClears.includes(unique)) {
+                        mw.Event.dispatchToClient(
+                            player,
+                            GlobalEventName.ServerTipsEventName,
+                            GameConfig.Language.getElement("Stage_Select_8").Value
+                        );
+                        return false;
+                    } else {
+                        if (
+                            !ModuleService.getModule(EnergyModuleS).isAfford(
                                 playerID,
                                 GameServiceConfig.STAMINA_COST_START_GAME * times
+                            )
+                        ) {
+                            Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+                            mw.Event.dispatchToClient(
+                                Player.getPlayer(playerID),
+                                GlobalEventName.ServerTipsEventName,
+                                GameConfig.Language.getElement("Text_insufficientStamina").Value
                             );
-                            // todo 显示结算 发放奖励
-                            GameManager.sweepGame(ids, this.stageCfgId, times);
-                            return true;
+                            return false;
                         }
-                    } catch (error) {
-                        console.log(error);
+                        ModuleService.getModule(EnergyModuleS).consume(
+                            playerID,
+                            GameServiceConfig.STAMINA_COST_START_GAME * times
+                        );
+                        // todo 发起扣款请求核对
+                        GameManager.sweepGame(ids, this.stageCfgId, times);
+                        return true;
                     }
                 }
             }

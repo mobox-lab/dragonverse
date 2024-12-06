@@ -93,6 +93,8 @@ export class UIStageSelect extends StageSelect_Generate {
     public isShowCounterInfo: boolean = false;
     public leaveCountDown: number = 10;
     public leaveCountTimerId: number = 0;
+    public sweepBalanceData: number = 0;
+    public sweepCount: number = 0;
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -122,6 +124,9 @@ export class UIStageSelect extends StageSelect_Generate {
         });
 
         this.mSweep.onClicked.add(() => {
+            if (this.sweepCount === 0) {
+                return;
+            }
             this.resetLeaveGameCountDown();
             this._script.changeOwnerByClick(Player.localPlayer.playerId);
             setTimeout(() => {
@@ -131,12 +136,9 @@ export class UIStageSelect extends StageSelect_Generate {
                         console.log("game is already exist");
                         // game is already exist
                     } else {
-                        const res = this._script.sweepGame(Player.localPlayer.playerId);
-                        if (res) {
-                            TimeUtil.delayExecute(() => {
-                                this._script.resetUserPosition(Player.localPlayer);
-                            }, 50);
-                        }
+                        this._script.sweepGame(Player.localPlayer.playerId, this.sweepCount);
+                        // todo 优化
+                        this._script.resetUserPosition(Player.localPlayer);
                     }
                 } else {
                     TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
@@ -160,6 +162,43 @@ export class UIStageSelect extends StageSelect_Generate {
         this.counterInfoBtn.onUnhovered.add(() => {
             this.setCounterInfoShow(false);
         });
+        this.refreshBtn.onClicked.add(() => {
+            this.initSweepBalance();
+        });
+        this.btnMinus.onClicked.add(() => {
+            if (this.sweepCount === 0) {
+                return;
+            }
+            this.sweepCount = this.sweepCount - 1;
+            this.sweepNumber.text = this.sweepCount.toString();
+        });
+
+        this.btnAdd.onClicked.add(() => {
+            if (this.sweepCount === this.sweepBalanceData) {
+                return;
+            }
+            this.sweepCount = this.sweepCount + 1;
+            this.sweepNumber.text = this.sweepCount.toString();
+        });
+
+        this.initSweepBalance();
+        this.initSweepCount();
+    }
+
+    initSweepBalance() {
+        // todo fetch balance
+        const balance = 10;
+        this.sweepBalanceData = balance;
+        this.sweepBalance.text = balance.toString();
+    }
+
+    refreshSweepBalance() {
+        this.initSweepBalance();
+    }
+
+    initSweepCount() {
+        this.sweepCount = 0;
+        this.sweepNumber.text = "0";
     }
 
     // 从打开的时候就开始倒计时10s，倒计时结束自动执行这个
@@ -483,6 +522,8 @@ export class UIStageSelect extends StageSelect_Generate {
     onHide() {
         this.setCounterInfoShow(false);
         this.resetLeaveGameCountDown();
+        this.initSweepBalance();
+        this.initSweepCount();
     }
 
     getRecommendElement(id: number, index: number) {
