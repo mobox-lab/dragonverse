@@ -27,17 +27,27 @@ export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
             UIService.hide(SenzuBeanConfirmPanel);
             UIService.show(SenzuBeanReConfirmPanel);
         });
+        // 刷新道具
+        // this.btn_Confirm_Refresh.onClicked.add(() => {
+        //     this.bagC.refreshBagItem().then(() => {
+        //         this.getSenzuBeanCount();
+        //     });
+        // });
     }
 
     protected onShow() {
-        const spCount = this.bagC.getItem(P12ItemResId.StaminaPotion);
-        this.btn_Confirm_Use.enable = spCount > 0;
-        this.text_Number.text = spCount.toString();
-        MouseLockController.getInstance().needMouseUnlock();
+        this.getSenzuBeanCount();
     }
 
     protected onHide(): void {
         MouseLockController.getInstance().cancelMouseUnlock();
+    }
+
+    private getSenzuBeanCount() {
+        const spCount = this.bagC.getItem(P12ItemResId.StaminaPotion);
+        this.btn_Confirm_Use.enable = spCount > 0;
+        this.text_Number.text = spCount.toString();
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
 }

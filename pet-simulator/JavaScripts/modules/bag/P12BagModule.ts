@@ -65,7 +65,7 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
      */
     public refreshBagItem() {
         if (this._requestRegulator.request()) {
-            this.server.net_refreshBagItem();
+            return this.server.net_refreshBagItem();
         }
     }
 }
@@ -95,8 +95,9 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      * @param {mw.Player} player
      * @private
      */
-    private queryP12BagItem(player: mw.Player) {
-        this.authS.queryUserP12Bag(player.userId, GameServiceConfig.SCENE_NAME).then(res => {
+    private async queryP12BagItem(player: mw.Player) {
+        try {
+            const res = await this.authS.queryUserP12Bag(player.userId, GameServiceConfig.SCENE_NAME);
             const map: Map<P12ItemResId, number> = new Map([
                 [P12ItemResId.DragonEgg, 0],
                 [P12ItemResId.CaptureBall, 0],
@@ -104,7 +105,9 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
             ]);
             res.list.forEach(item => map.set(item.resId, item.unuse));
             this.getClient(player).net_setData(map);
-        });
+        } catch (error) {
+            Log4Ts.error(P12BagModuleS, error);
+        }
     }
 
     public net_consumeCurrency(consumeId: ConsumeId, count: number): Promise<boolean> {
@@ -137,6 +140,11 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         return this.consumePotion(player, count);
     }
 
+    public net_refreshBagItem() {
+        const player = this.currentPlayer;
+        return this.queryP12BagItem(player);
+    }
+
     /**
      * 上报数据
      * @param {string} userId 用户 id
@@ -147,11 +155,5 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
     private reportStatistic(userId: string, count: number, recovery: number) {
         ModuleService.getModule(StatisticModuleS).recordStaPotConsume(count, recovery, userId);
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
-    }
-
-    @Decorator.noReply()
-    public net_refreshBagItem() {
-        const player = this.currentPlayer;
-        this.queryP12BagItem(player);
     }
 }

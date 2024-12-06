@@ -234,7 +234,7 @@ export class MainUI extends Main_HUD_Generate {
         // 刷新体力
         this.mBtn_Battle_Refresh.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
-            ModuleService.getModule(P12BagModuleC)?.refreshBagItem();
+            ModuleService.getModule(P12BagModuleC)?.refreshBagItem().then();
         });
 
         /**打开技能选择界面 */

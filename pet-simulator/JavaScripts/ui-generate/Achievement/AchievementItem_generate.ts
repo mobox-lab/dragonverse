@@ -29,6 +29,20 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mImage_AwardType_Internal
 	}
+	private mText_Award2_Internal: mw.TextBlock
+	public get mText_Award2(): mw.TextBlock {
+		if(!this.mText_Award2_Internal&&this.uiWidgetBase) {
+			this.mText_Award2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/DetailCanvas/mText_Award2') as mw.TextBlock
+		}
+		return this.mText_Award2_Internal
+	}
+	private mImage_AwardType2_Internal: mw.Image
+	public get mImage_AwardType2(): mw.Image {
+		if(!this.mImage_AwardType2_Internal&&this.uiWidgetBase) {
+			this.mImage_AwardType2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/DetailCanvas/mImage_AwardType2') as mw.Image
+		}
+		return this.mImage_AwardType2_Internal
+	}
 	private mImage_GradeBG_Internal: mw.Image
 	public get mImage_GradeBG(): mw.Image {
 		if(!this.mImage_GradeBG_Internal&&this.uiWidgetBase) {
@@ -119,6 +133,9 @@ export default class AchievementItem_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.mText_Award)
+		
+	
+		this.initLanguage(this.mText_Award2)
 		
 	
 		this.initLanguage(this.mText_AMname)

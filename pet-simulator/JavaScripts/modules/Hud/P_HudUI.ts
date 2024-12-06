@@ -118,7 +118,7 @@ export class P_HudUI extends Hud_Generate {
 
         this.btn_Fresh.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
-            ModuleService.getModule(P12BagModuleC)?.refreshBagItem();
+            ModuleService.getModule(P12BagModuleC)?.refreshBagItem().then();
         });
 
         this.setGMBtn();

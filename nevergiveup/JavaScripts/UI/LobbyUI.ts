@@ -28,6 +28,7 @@ import { GlobalData } from "../const/GlobalData";
 import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
 import { AuthModuleC } from "../Modules/auth/AuthModule";
 import QuestionUI from "./QuestionUI";
+import { P12BagModuleC } from "../Modules/bag/P12BagModule";
 
 const progressTag = "LobbyTransmitProgress";
 export default class LobbyUI extends LobbyUI_Generate {
@@ -85,7 +86,8 @@ export default class LobbyUI extends LobbyUI_Generate {
             Gtk.trySetText(this.mStamina, Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString())
         );
         this.freshBtn.onClicked.add(() => {
-            ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
+            ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
+            ModuleService.getModule(P12BagModuleC)?.refreshBagItem().then();
         });
         // 脱离卡死
         this.returnBtn.onClicked.add(() => {
