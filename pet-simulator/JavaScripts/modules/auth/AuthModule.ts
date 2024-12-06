@@ -333,7 +333,7 @@ interface EncryptedData {
     encryptData: string;
 }
 
-type ReqRegulatorType = "temp-token" | "stamina" | "currency";
+type ReqRegulatorType = "temp-token" | "stamina" | "currency" | "points";
 
 type SceneName = "pet" | "fight" | "tower" | "dragon";
 
@@ -463,6 +463,18 @@ interface ConsumePotionReq extends UserDataReq {
 }
 
 /**
+ * 增加 活动积分 请求参数.
+ */
+interface AddPointsReq extends UserDataReq {
+    userName: string;
+    userAvatar: string;
+    taskId: string; // 任务ID
+    taskPoint: number; // 任务分
+    completeTime: number; // 任务完成时间,时间戳
+    subGameId: 'pet' | 'defense'; // 哪个游戏:'pet', 'defense'
+}
+
+/**
  * 消耗 体力药水 返回值.
  */
 interface ConsumePotionRespData {
@@ -516,6 +528,17 @@ interface QueryStaminaLimitRespData {
 }
 
 /**
+ * 积分查询返回值.
+ */
+interface QueryPointsRespData {
+    /**
+     * 积分.
+     */
+    totalPoints: number;
+}
+
+
+/**
  * 汇报 宠物模拟器排行榜 请求参数.
  */
 interface UpdatePetSimulatorRankDataReq extends UserDataReq {
@@ -563,6 +586,17 @@ export type UpdateTDRankDataNeedFill = {
     recordTime: number; // 上榜时间
     detail: number[]; // 装备卡片的 ids
 }
+
+interface UpdateTDRankDataReq extends UserDataReq {
+    userName: string;
+    userAvatar: string;
+    round: number; //赛季 round 传 0 就行
+    roundId: number; // 完成波数 number
+    finish: number; // 最后一波完成度 时间 20 30
+    recordTime: number; // 上榜时间
+    detail: number[]; // 装备卡片的 ids
+}
+
 
 /**
  * 查询 用户 P12 背包 返回值.
@@ -1273,6 +1307,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
 
     /**
+     * 查询积分 Uri.
+     * @private
+     */
+    private static readonly TOTAL_POINTS_URI = "/pge-game/point/total";
+
+    /**
+     * 上传积分 Uri.
+     * @private
+     */
+    private static readonly ADD_POINTS_URI = "/pge-game/point/update";
+
+    /**
      * 查询货币余额 Uri.
      */
     private static readonly GET_CURRENCY_URI = "/user-fund/balance";
@@ -1485,6 +1531,34 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
+     * 测试用 积分查询 Url.
+     */
+    private static get TEST_TOTAL_POINTS_URL() {
+        return this.TEST_P12_DOMAIN + this.TOTAL_POINTS_URI;
+    }
+
+    /**
+     * 发布用 积分查询 Url.
+     */
+    private static get RELEASE_TOTAL_POINTS_URL() {
+        return this.RELEASE_P12_DOMAIN + this.TOTAL_POINTS_URI;
+    }
+
+    /**
+     * 测试用 积分上传 Url.
+     */
+    private static get TEST_ADD_POINTS_URL() {
+        return this.TEST_P12_DOMAIN + this.ADD_POINTS_URI;
+    }
+
+    /**
+     * 发布用 积分上传 Url.
+     */
+    private static get RELEASE_ADD_POINTS_URL() {
+        return this.RELEASE_P12_DOMAIN + this.ADD_POINTS_URI;
+    }
+
+    /**
      * 测试用 汇报 宠物模拟器排行榜 Url.
      */
     private static get TEST_P_S_RANK_REPORT_URL() {
@@ -1617,6 +1691,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 玩家体力上限表.
      */
     public playerStaminaLimitMap: Map<string, number> = new Map();
+
+    /**
+     * 玩家积分表.
+     */
+    public playerPointsMap: Map<string, number> = new Map();
 
     /**
      * 玩家体力恢复预期时长表. s
@@ -2015,6 +2094,50 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         return respInJson.data;
     }
+    
+    public async addDragonPoint(userId: string, sceneName: SceneName, info: { taskId: string, taskPoint: number, subGameId: 'pet' | 'defense',  }): Promise<boolean | undefined> {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return undefined;
+        }
+        const { taskId, taskPoint, subGameId} = info ?? {};
+
+        const player = Player.getPlayer(userId);
+        const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
+
+        const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
+        const userAvatar = player["avatarUrl"];
+        const completeTime = Math.floor(Date.now() / 1000);
+
+        const requestParam: AddPointsReq = {
+            userId,
+            userName,
+            userAvatar,
+            gameId,
+            sceneId,
+            sceneName,
+            taskId,
+            taskPoint,
+            completeTime,
+            subGameId,
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp<boolean>>(
+            requestParam,
+            AuthModuleS.RELEASE_ADD_POINTS_URL,
+            AuthModuleS.TEST_ADD_POINTS_URL,
+        );
+
+        if (respInJson?.code !== 200) {
+            Log4Ts.error(AuthModuleS, `add dragon point failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
+            return undefined;
+        }
+
+        return respInJson.data;
+    }
 
     public async queryUserP12Bag(userId: string, sceneName: SceneName): Promise<UserP12BagRespData | undefined> {
         const sceneId = await this.querySceneId(userId);
@@ -2149,6 +2272,33 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         ) {
             data.holdAddress = respInJson.data.walletAddress;
             data.save(false);
+        }
+    }
+
+    public async queryRegisterPoints(userId: string, sceneName: SceneName) {
+        const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
+        const requestParam: UserDataReq = {
+            userId,
+            sceneId,
+            sceneName,
+            gameId,
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp<QueryPointsRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_TOTAL_POINTS_URL,
+            AuthModuleS.TEST_TOTAL_POINTS_URL,
+        );
+
+        if (Gtk.isNullOrUndefined(respInJson?.data?.totalPoints)) {
+            Log4Ts.log(
+                AuthModuleS,
+                `invalid value when query totalPoints for user ${userId}.`,
+                `reason: ${JSON.stringify(respInJson)}`,
+            );
+        } else {
+            this.playerPointsMap.set(userId, Number(respInJson.data.totalPoints));
         }
     }
 
@@ -2504,6 +2654,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     public requestRefreshStaminaLimit(userId: string, sceneName: SceneName) {
         if (!this.checkRequestRegulator(userId, "stamina")) return;
         return this.queryRegisterStaminaLimit(userId, sceneName);
+    }
+
+    public requestUserPoints(userId: string, sceneName: SceneName) {
+        if (!this.checkRequestRegulator(userId, "points")) return;
+        return this.queryRegisterPoints(userId, sceneName);
     }
 
     private setCurrency(userId: string, count: string) {

@@ -9,6 +9,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { Reward } from "../../tool/Reward";
 import Utils from "../../Utils";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import { TimerModuleUtils } from "../TimeModule/time";
 import { EmTaskType, TaskModuleC } from "./TaskModuleC";
 import { TaskModuleDataHelper } from "./TaskModuleDataHelper";
@@ -66,6 +67,7 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 				data.finishTasks.push(taskId);
 				const cfg = GameConfig.Task.getElement(taskId);
 				Reward.grantReward(this.currentPlayer, cfg.rewards, null, taskId)
+				if(cfg?.dragonPoints) ModuleService.getModule(EnergyModuleS).addPoints(userId, {taskId: taskId?.toString() ?? '', taskPoint: cfg.dragonPoints, subGameId: 'defense'});
 				data.save(false);
 				return true;
 			}

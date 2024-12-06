@@ -6,6 +6,7 @@ import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import { addGMCommand } from "mw-god-mod";
+import Utils from "../../Utils";
 
 addGMCommand(
     "Change Energy",
@@ -19,6 +20,23 @@ addGMCommand(
         Log4Ts.log(EnergyModuleS, `try add energy to player ${player.userId}. by GM. value: ${v}`);
 
         ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, v);
+    },
+    undefined,
+    "Energy",
+);
+
+addGMCommand(
+    "Add Points",
+    "string",
+    undefined,
+    (player, value) => {
+        let v = parseInt(value);
+        if (Number.isNaN(v)) {
+            v = 0;
+        }
+        Log4Ts.log(EnergyModuleS, `try set points to player ${player.userId}. by GM. value: ${v}`);
+
+        ModuleService.getModule(EnergyModuleS).addPoints(player.userId, {taskPoint: v, subGameId: 'defense', taskId: "0"});
     },
     undefined,
     "Energy",
@@ -39,6 +57,9 @@ export default class TDEnergyModuleData extends mwext.Subdata {
 
     @Decorator.persistence()
     public restitution: number = 0;
+
+    @Decorator.persistence()
+    public points: number = 0;
 
     public isAfford(cost: number = 1): boolean {
         return this.energy >= cost;
@@ -102,6 +123,8 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, TDEnergyModuleDa
 
     public viewEnergyLimit: { data: number } = createYoact({data: 0});
 
+    public viewPoints: { data: number } = createYoact({data: 0});
+
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -133,6 +156,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, TDEnergyModuleDa
 
         this.viewEnergy.data = this.data.energy;
         this.viewEnergyLimit.data = this.data.lastMaxStamina;
+        this.viewPoints.data = this.data.points;
     }
 
     protected onDestroy(): void {
@@ -211,7 +235,18 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, TDEnergyModuleDa
         }
     }
 
+    public net_syncPoints(points: number) {
+        this.data.points = points;
+        this.viewPoints.data = points;
+        Log4Ts.log(EnergyModuleC, `synced points from server. current is ${points}.`);
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    // 获取当前积分
+    public getCurrentPoints(): number {
+        return this.viewPoints.data;
+    }
 }
 
 export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, TDEnergyModuleData> {
@@ -268,7 +303,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, TDEnergyModuleDa
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        this.initPlayerEnergy(player);
+        this.initPlayerEnergyData(player);
     }
 
     protected onPlayerLeft(player: Player): void {
@@ -281,7 +316,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, TDEnergyModuleDa
 
     //#region Method
 
-    private initPlayerEnergy(player: mw.Player) {
+    private initPlayerEnergyData(player: mw.Player) {
         const d = this.getPlayerData(player);
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval =
@@ -332,6 +367,9 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, TDEnergyModuleDa
             autoRecoveryHandler();
         });
         this._playerConsumeMap.set(player.userId, 0);
+        d.points = this.authModuleS.playerPointsMap.get(player.userId) ?? 0;
+        console.log("#point init d.points:", d.points);
+        Log4Ts.log(EnergyModuleS, `synced points from server. current is ${d.points}.`);
     }
 
     /**
@@ -410,4 +448,62 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, TDEnergyModuleDa
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    // 添加积分
+    public async addPoints(userId: string, info: { taskId: string, taskPoint: number, subGameId: 'pet' | 'defense',  }) : Promise<boolean> {
+        const player = Player.getPlayer(userId);
+        const d = this.getPlayerData(userId);
+        if (!d || !player) return false;
+        Log4Ts.log(EnergyModuleS," addPoint d.points:" + d.points + JSON.stringify(info));
+        const { taskId, taskPoint, subGameId } = info ?? {};
+        const timestamp = Math.floor(Date.now() / 1000);
+        try{
+            const res = await ModuleService.getModule(AuthModuleS).addDragonPoint(player.userId, GameServiceConfig.SCENE_NAME, info);
+            d.points += taskPoint;
+            d.save(false);
+            this.syncPointsToClient(player.userId, d.points);
+            Log4Ts.log(EnergyModuleS, `add ${taskPoint} points to player ${userId}.`, ` current: ${d.points}`);
+            Utils.logP12Info("A_Points", {
+                userId,
+                taskId,
+                taskPoint,
+                timestamp,
+                subGameId,
+            }, "info");
+            return res;
+        } catch (e) {
+            Utils.logP12Info("A_Points_Error", {
+                userId,
+                timestamp,
+                taskId,
+                taskPoint,
+                subGameId,
+            }, "error");
+            return false;
+        }
+    }
+
+    // 设置积分
+    public setPoints(userId: string, val: number) {
+        const player = Player.getPlayer(userId);
+        const d = this.getPlayerData(userId);
+        if (!d || !player) return;
+        
+        d.points = val;
+        d.save(false);
+        this.syncPointsToClient(player.userId, d.points);
+        Log4Ts.log(EnergyModuleS, `set points for player ${userId} to ${val}`);
+    }
+
+    // 同步积分到客户端
+    public syncPointsToClient(userId: string, points: number) {
+        const player = Player.getPlayer(userId);
+        this.getClient(player)?.net_syncPoints(points);
+    }
+
+    // 获取玩家积分
+    public getPlayerPoints(playerId: number): number {
+        const data = this.getPlayerData(playerId);
+        return data?.points ?? 0;
+    }
 }
