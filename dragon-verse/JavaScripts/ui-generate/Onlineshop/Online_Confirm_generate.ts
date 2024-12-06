@@ -92,6 +92,27 @@ export default class Online_Confirm_Generate extends UIScript {
 		}
 		return this.btn_UnConfirm_Use_Internal
 	}
+	private can_Confirm_Refresh_Internal: mw.Canvas
+	public get can_Confirm_Refresh(): mw.Canvas {
+		if(!this.can_Confirm_Refresh_Internal&&this.uiWidgetBase) {
+			this.can_Confirm_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirm_Refresh') as mw.Canvas
+		}
+		return this.can_Confirm_Refresh_Internal
+	}
+	private btn_Confirm_Refresh_Internal: mw.Button
+	public get btn_Confirm_Refresh(): mw.Button {
+		if(!this.btn_Confirm_Refresh_Internal&&this.uiWidgetBase) {
+			this.btn_Confirm_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirm_Refresh/btn_Confirm_Refresh') as mw.Button
+		}
+		return this.btn_Confirm_Refresh_Internal
+	}
+	private text_Refresh_Internal: mw.TextBlock
+	public get text_Refresh(): mw.TextBlock {
+		if(!this.text_Refresh_Internal&&this.uiWidgetBase) {
+			this.text_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirm_Refresh/btn_Confirm_Refresh/text_Refresh') as mw.TextBlock
+		}
+		return this.text_Refresh_Internal
+	}
 	private mBtn_Close_Internal: mw.Button
 	public get mBtn_Close(): mw.Button {
 		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
@@ -136,6 +157,9 @@ export default class Online_Confirm_Generate extends UIScript {
         this.btn_UnConfirm_Use.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
+        this.btn_Confirm_Refresh.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
         this.mBtn_Close.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
@@ -147,6 +171,9 @@ export default class Online_Confirm_Generate extends UIScript {
         
 	
         this.initLanguage(this.text_Use)
+        
+	
+        this.initLanguage(this.text_Refresh)
         
 	
         // 未暴露的文本控件
@@ -173,6 +200,9 @@ export default class Online_Confirm_Generate extends UIScript {
         overrideTextBlockTextSetter(this.text_Use);
         
 	
+        overrideTextBlockTextSetter(this.text_Refresh);
+        
+	
     }
 
     protected unregisterTextLan(){
@@ -186,6 +216,9 @@ export default class Online_Confirm_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.text_Use)
+        
+	
+        this.unregisterLanKey(this.text_Refresh)
         
 	
         // 隐藏文本多语言
