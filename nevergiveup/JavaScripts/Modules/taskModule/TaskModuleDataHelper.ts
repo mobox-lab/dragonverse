@@ -8,7 +8,7 @@
  */
 
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
+import utc from "dayjs/plugin/utc";
 import { TimerModuleUtils } from "../TimeModule/time";
 import { GameConfig } from "../../config/GameConfig";
 import { EmTaskType } from "./TaskModuleC";
@@ -29,36 +29,58 @@ export class TaskModuleDataHelper extends Subdata {
     @Decorator.persistence()
     public lastDailyTaskRefreshTimestamp: number | null = null;
 
+    @Decorator.persistence()
+    finishTaskRecords: { time: number; taskId: number; taskType: number; points: number }[];
+
+    @Decorator.persistence()
+    totalPoints: number;
+
     /**
      * 初始化当前完成的主线任务
      */
     protected initDefaultData(): void {
         this.finishTasks = [];
+        this.finishTaskRecords = [];
+        this.totalPoints = 0;
     }
 
     protected onDataInit(): void {
-        if(this.finishTasks == null) this.finishTasks = [];
+        if (this.finishTasks == null) this.finishTasks = [];
+        if (this.finishTaskRecords == null) this.finishTaskRecords = [];
+        if (this.totalPoints == null) this.totalPoints = 0;
     }
 
     public clearAllDaily(player: Player, nowTime: number) {
-        if(!player) return;
+        if (!player) return;
         console.log("#time clearAllDaily player userId:" + player.userId + " nowTime:" + nowTime);
         ModuleService.getModule(TalentModuleS)?.clearDailyCountByPlayer(player);
         ModuleService.getModule(PlayerModuleS)?.clearDailyCountByPlayer(player);
-        this.finishTasks = this.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
+        this.finishTasks = this.finishTasks.filter(
+            (taskId) => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily
+        );
         this.lastDailyTaskRefreshTimestamp = nowTime;
-        console.log("#time clearTaskTodayIfNewDay after finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
+        console.log(
+            "#time clearTaskTodayIfNewDay after finishTasks:" +
+                JSON.stringify(this.finishTasks) +
+                " lastDailyTaskRefreshTimestamp:" +
+                this.lastDailyTaskRefreshTimestamp
+        );
         this.save(true);
     }
 
     public clearTaskTodayIfNewDay(player: Player) {
         const nowTime = dayjs.utc().valueOf();
-        console.log("#time clearTaskTodayIfNewDay finishTasks:" + JSON.stringify(this.finishTasks) + " lastDailyTaskRefreshTimestamp:" + this.lastDailyTaskRefreshTimestamp);
-        if(this.lastDailyTaskRefreshTimestamp) {
+        console.log(
+            "#time clearTaskTodayIfNewDay finishTasks:" +
+                JSON.stringify(this.finishTasks) +
+                " lastDailyTaskRefreshTimestamp:" +
+                this.lastDailyTaskRefreshTimestamp
+        );
+        if (this.lastDailyTaskRefreshTimestamp) {
             const preTime = this.lastDailyTaskRefreshTimestamp;
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
-            console.log("#debug judgeIsNewDay isNewDay:", isNewDay)
-            if(isNewDay) {
+            console.log("#debug judgeIsNewDay isNewDay:", isNewDay);
+            if (isNewDay) {
                 this.clearAllDaily(player, nowTime);
                 return true;
             }
