@@ -110,6 +110,10 @@ export class P_HudUI extends Hud_Generate {
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
                     .toString()));
         Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mText_point,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewPoints.data)
+                    .toString()));
+        Yoact.bindYoact(() =>
             Gtk.trySetText(this.mText_stamina,
                 (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
                     Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :

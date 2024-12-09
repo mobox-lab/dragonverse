@@ -83,6 +83,10 @@ export default class LobbyUI extends LobbyUI_Generate {
             )
         );
         Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mPoint,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewPoints.data)
+                    .toString()));
+        Yoact.bindYoact(() =>
             Gtk.trySetText(this.mStamina, Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString())
         );
         this.freshBtn.onClicked.add(() => {

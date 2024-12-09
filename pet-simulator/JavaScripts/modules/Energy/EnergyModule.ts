@@ -366,10 +366,13 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
             }
             autoRecoveryHandler();
         });
+        this.authModuleS.requestUserPoints(player.userId, GameServiceConfig.SCENE_NAME).then(() => {
+            this.setPoints(player.userId, this.authModuleS.playerPointsMap.get(player.userId) ?? 0);
+            console.log("#point init d.points:", d.points);
+            Log4Ts.log(EnergyModuleS, `synced points from server. current is ${d.points}.`);
+        });
+
         this._playerConsumeMap.set(player.userId, 0);
-        d.points = this.authModuleS.playerPointsMap.get(player.userId) ?? 0;
-        console.log("#point init d.points:", d.points);
-        Log4Ts.log(EnergyModuleS, `synced points from server. current is ${d.points}.`);
     }
 
     /**

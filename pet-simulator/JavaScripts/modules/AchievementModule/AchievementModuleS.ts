@@ -1,5 +1,7 @@
-﻿import { GlobalEnum } from "../../const/Enum";
+﻿import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
 import { utils } from "../../util/uitls";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
@@ -61,6 +63,7 @@ export default class AchievementModuleS extends ModuleS<
         achievementReward: GlobalEnum.AchievementReward,
         reward: number,
     ): void {
+        const cfg = GameConfig.Achievements.getElement(achievementId);
         switch (achievementReward) {
             case GlobalEnum.AchievementReward.FirstWorldGold:
                 this.playerModuleS.addGold(
@@ -106,6 +109,13 @@ export default class AchievementModuleS extends ModuleS<
             rewardNum: reward,
             achievementCnt: achievementCnt + 1,// 赛季总成就完成次数
         });
+        if (cfg?.dragonPoints) {
+            ModuleService.getModule(EnergyModuleS).addPoints(userId, {
+                taskId: achievementId?.toString() ?? "",
+                taskPoint: cfg.dragonPoints,
+                subGameId: "pet",
+            });
+        }
         sData.recordTotalData({achievementCnt: achievementCnt + 1});
     }
 }

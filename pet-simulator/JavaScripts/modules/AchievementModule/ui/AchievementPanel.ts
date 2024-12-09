@@ -3,6 +3,7 @@
  * TIME: 2023.07.04-17.51.54
  */
 
+import Gtk from "gtoolkit";
 import {ObjectPoolServices} from "../../../Tools/ObjectPool";
 import {IAchievementsElement} from "../../../config/Achievements";
 import {GameConfig} from "../../../config/GameConfig";
@@ -120,8 +121,12 @@ class AchievementItem {
     public mText_AMdetial: mw.TextBlock = undefined;
     /**奖励数量 */
     public mText_Award: mw.TextBlock = undefined;
+    /**奖励数量2 */
+    public mText_Award2: mw.TextBlock = undefined;
     /**奖励图标类型 */
     public mImage_AwardType: mw.Image = undefined;
+    /**奖励图标类型2 */
+    public mImage_AwardType2: mw.Image = undefined;
     /**背景 */
     public mImage_GradeBG: mw.Image = undefined;
     /**进度条 */
@@ -145,6 +150,7 @@ class AchievementItem {
 
         this.mText_AMdetial = this.achievementItem.findChildByPath("RootCanvas/Canvas/DetailCanvas/mText_AMdetial") as mw.TextBlock;
         this.mText_Award = this.achievementItem.findChildByPath("RootCanvas/Canvas/DetailCanvas/mText_Award") as mw.TextBlock;
+        this.mText_Award2 = this.achievementItem.findChildByPath("RootCanvas/Canvas/DetailCanvas/mText_Award2") as mw.TextBlock;
         this.mText_Grade = this.achievementItem.findChildByPath("RootCanvas/Canvas/mText_Grade") as mw.TextBlock;
         this.mText_AMname = this.achievementItem.findChildByPath("RootCanvas/Canvas/mText_AMname") as mw.TextBlock;
         this.mCanvas_Pointto = this.achievementItem.findChildByPath("RootCanvas/Canvas/mCanvas_Pointto") as mw.Canvas;
@@ -152,6 +158,7 @@ class AchievementItem {
         this.mImage_Point = this.achievementItem.findChildByPath("RootCanvas/Canvas/mCanvas_Pointto/mImage_Point") as mw.Image;
         this.mText_lording = this.achievementItem.findChildByPath("RootCanvas/Canvas/mText_lording") as mw.TextBlock;
         this.mImage_AwardType = this.achievementItem.findChildByPath("RootCanvas/Canvas/DetailCanvas/mImage_AwardType") as mw.Image;
+        this.mImage_AwardType2 = this.achievementItem.findChildByPath("RootCanvas/Canvas/DetailCanvas/mImage_AwardType2") as mw.Image;
         this.mImage_GradeBG = this.achievementItem.findChildByPath("RootCanvas/Canvas/mImage_GradeBG") as mw.Image;
         this.mProgressBar = this.achievementItem.findChildByPath("RootCanvas/Canvas/mProgressBar") as mw.ProgressBar;
     }
@@ -196,6 +203,16 @@ class AchievementItem {
         }
         this.mText_Award.text = rewardAmount;
         this.mImage_AwardType.imageGuid = rewardicon;
+
+        if(achievementsElement?.dragonPoints){
+            Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.HitTestInvisible);
+            Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.HitTestInvisible);
+            this.mText_Award2.text = achievementsElement.dragonPoints.toString();
+            this.mImage_AwardType2.imageGuid = '480835';
+        } else {
+            Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.Collapsed);
+            Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.Collapsed);
+        }
     }
 
     /**根据难易程度更新背景颜色 */
