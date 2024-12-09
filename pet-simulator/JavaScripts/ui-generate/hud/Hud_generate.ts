@@ -246,6 +246,34 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.textCoinNum_Internal
 	}
+	private can_point_Internal: mw.Canvas
+	public get can_point(): mw.Canvas {
+		if(!this.can_point_Internal&&this.uiWidgetBase) {
+			this.can_point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_point') as mw.Canvas
+		}
+		return this.can_point_Internal
+	}
+	private mText_point_Internal: mw.TextBlock
+	public get mText_point(): mw.TextBlock {
+		if(!this.mText_point_Internal&&this.uiWidgetBase) {
+			this.mText_point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_point/mText_point') as mw.TextBlock
+		}
+		return this.mText_point_Internal
+	}
+	private pic_point_Internal: mw.Image
+	public get pic_point(): mw.Image {
+		if(!this.pic_point_Internal&&this.uiWidgetBase) {
+			this.pic_point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_point/pic_point') as mw.Image
+		}
+		return this.pic_point_Internal
+	}
+	private btn_FreshPoint_Internal: mw.Button
+	public get btn_FreshPoint(): mw.Button {
+		if(!this.btn_FreshPoint_Internal&&this.uiWidgetBase) {
+			this.btn_FreshPoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_point/btn_FreshPoint') as mw.Button
+		}
+		return this.btn_FreshPoint_Internal
+	}
 	private mCanvas_Transmit_Internal: mw.Canvas
 	public get mCanvas_Transmit(): mw.Canvas {
 		if(!this.mCanvas_Transmit_Internal&&this.uiWidgetBase) {
@@ -472,6 +500,12 @@ export default class Hud_Generate extends UIScript {
 		this.taskShopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
+		this.btn_FreshPoint.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_FreshPoint");
+		})
+		this.btn_FreshPoint.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		this.mBtn_Transmit.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Transmit");
 		})
@@ -541,6 +575,9 @@ export default class Hud_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.textCoinNum)
+		
+	
+		this.initLanguage(this.mText_point)
 		
 	
 		this.initLanguage(this.roomIdText)
