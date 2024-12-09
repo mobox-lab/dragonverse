@@ -400,6 +400,41 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.imgToekn_Internal
 	}
+	private pointCanvas_Internal: mw.Canvas
+	public get pointCanvas(): mw.Canvas {
+		if(!this.pointCanvas_Internal&&this.uiWidgetBase) {
+			this.pointCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/pointCanvas') as mw.Canvas
+		}
+		return this.pointCanvas_Internal
+	}
+	private pointBg_Internal: mw.Image
+	public get pointBg(): mw.Image {
+		if(!this.pointBg_Internal&&this.uiWidgetBase) {
+			this.pointBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/pointCanvas/pointBg') as mw.Image
+		}
+		return this.pointBg_Internal
+	}
+	private mPoint_Internal: mw.TextBlock
+	public get mPoint(): mw.TextBlock {
+		if(!this.mPoint_Internal&&this.uiWidgetBase) {
+			this.mPoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/pointCanvas/mPoint') as mw.TextBlock
+		}
+		return this.mPoint_Internal
+	}
+	private freshPointBtn_Internal: mw.Button
+	public get freshPointBtn(): mw.Button {
+		if(!this.freshPointBtn_Internal&&this.uiWidgetBase) {
+			this.freshPointBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/pointCanvas/freshPointBtn') as mw.Button
+		}
+		return this.freshPointBtn_Internal
+	}
+	private imgPoint_Internal: mw.Image
+	public get imgPoint(): mw.Image {
+		if(!this.imgPoint_Internal&&this.uiWidgetBase) {
+			this.imgPoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/pointCanvas/imgPoint') as mw.Image
+		}
+		return this.imgPoint_Internal
+	}
 
 
 
@@ -492,6 +527,12 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.freshTokenBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.freshPointBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "freshPointBtn");
+	   })
+	   this.freshPointBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
@@ -552,6 +593,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.mToken)
+	   
+	
+	   this.initLanguage(this.mPoint)
 	   
 	
 	   //文本多语言
