@@ -90,8 +90,8 @@ export namespace GlobalEnum {
         DestroyHeavenBigBoxNum = 24,
         /**到达幻想世界 */
         ReachFantasyWorldNum = 25,
-        /**到达科技世界 */
-        ReachTechnologyWorldNum = 26,
+        // /**到达科技世界 */
+        // ReachTechnologyWorldNum = 26,
     }
     /**成就奖励类型 */
     export enum AchievementReward {
