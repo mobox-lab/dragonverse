@@ -1,23 +1,38 @@
 ﻿{
-	"name": "Dragonverse Beta",
-	"packageName": "08D096774F1ACECE71873BA504C91FCD",
+	"IsHorizontal": true,
+	"name": "Dragonverseneo S8",
+	"packageName": "F54817A14C74C04358A97596DF29DC8C",
 	"foldername": "dragon-verse",
 	"mainScene": 1,
 	"scenePublic": 1,
-	"intro": "适配.31版",
-	"notes": "适配.31版",
-	"editorVersion": "v0.30.0.0",
+	"intro": "release S8",
+	"notes": "release S8",
+	"editorVersion": "v0.41.0.5",
 	"parentGameIdentity": "",
 	"parentGameId": "",
 	"extra": "{\"attribute\":2,\"IsHorizontal\":true,\"useAvatar\":1}",
 	"devEnv": 4,
-	"needToMgs": 0,
+	"needToMgs": 1,
 	"attribute": 2,
 	"autoSubmitAudit": false,
-	"ignore": [
-		"game.desc",
-		"Asset_Data_List"
-	],
+	"lightZipIgnore":
+	{
+		"suffixMatches": [
+			".meta",
+			".ts",
+			".ui",
+			".uimap",
+			".mat"
+		],
+		"fullMatches": [
+			"Asset_Data_List"
+		],
+		"prefixMatches": [
+			"AutoBackup/",
+			"JavaScripts/",
+			"Plugins/"
+		]
+	},
 	"files": [
 		{
 			"type": "Game_Thumbnail",
