@@ -412,6 +412,7 @@ export enum ConsumeId {
     CaptureBall = 1,
     DragonEgg = 2,
     StaminaPotion = 3,
+    SweepToken = 4,
 }
 
 /**
@@ -1079,6 +1080,11 @@ export enum P12ItemResId {
      * 体力药水
      */
     StaminaPotion = "10003",
+
+    /**
+     * 扫荡卷
+     */
+    SweepToken = "10004",
 }
 
 //#endregion

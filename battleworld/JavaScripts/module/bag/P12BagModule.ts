@@ -17,6 +17,7 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
         [P12ItemResId.DragonEgg, 0],
         [P12ItemResId.CaptureBall, 0],
         [P12ItemResId.StaminaPotion, 0],
+        [P12ItemResId.SweepToken, 0],
     ]);
 
     /**
@@ -108,6 +109,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
                 [P12ItemResId.DragonEgg, 0],
                 [P12ItemResId.CaptureBall, 0],
                 [P12ItemResId.StaminaPotion, 0],
+                [P12ItemResId.SweepToken, 0],
             ]);
             res.list.forEach(item => map.set(item.resId, item.unuse));
             this.getClient(player).net_setData(map);
