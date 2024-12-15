@@ -19,6 +19,7 @@ import Log4Ts from "mw-log4ts";
 import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
 import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
+import { P12BagModuleS } from "../Modules/bag/P12BagModule";
 
 export namespace StageTriggerInst {
     export let posMap: { [stageId: number]: Vector } = {};
@@ -360,7 +361,6 @@ export default class StageTrigger extends Script {
                     // 无尽模式不可以执行
                     return false;
                 } else {
-                    // todo 扫荡的次数
                     const firstPerfectClears = DataCenterS.getData(player, PlayerModuleData).firstPerfectClears;
                     const unique = Number(stageInfo.index.toString() + stageInfo.difficulty.toString());
                     if (!firstPerfectClears.includes(unique)) {
@@ -389,7 +389,7 @@ export default class StageTrigger extends Script {
                             playerID,
                             GameServiceConfig.STAMINA_COST_START_GAME * times
                         );
-                        // todo 发起扣款请求核对
+                        ModuleService.getModule(P12BagModuleS).net_consumeSweep(times);
                         GameManager.sweepGame(ids, this.stageCfgId, times);
                         return true;
                     }

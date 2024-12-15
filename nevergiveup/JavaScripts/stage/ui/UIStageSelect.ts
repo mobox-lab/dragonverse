@@ -20,6 +20,8 @@ import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
 import { IStageElement } from "../../config/Stage";
 import { ItemType } from "../../tool/Enum";
+import { P12BagModuleC } from "../../Modules/bag/P12BagModule";
+import { P12ItemResId } from "../../Modules/auth/AuthModule";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -163,7 +165,7 @@ export class UIStageSelect extends StageSelect_Generate {
             this.setCounterInfoShow(false);
         });
         this.refreshBtn.onClicked.add(() => {
-            this.initSweepBalance();
+            this.refreshSweepBalance();
         });
         this.btnMinus.onClicked.add(() => {
             if (this.sweepCount === 0) {
@@ -186,14 +188,18 @@ export class UIStageSelect extends StageSelect_Generate {
     }
 
     initSweepBalance() {
-        // todo fetch balance
-        const balance = 10;
+        const bag = ModuleService.getModule(P12BagModuleC);
+        const balance = bag.getItem(P12ItemResId.SweepToken);
         this.sweepBalanceData = balance;
         this.sweepBalance.text = balance.toString();
     }
 
     refreshSweepBalance() {
-        this.initSweepBalance();
+        const bag = ModuleService.getModule(P12BagModuleC);
+        bag.refreshBagItem();
+        setTimeout(() => {
+            this.initSweepBalance();
+        }, 2000);
     }
 
     initSweepCount() {

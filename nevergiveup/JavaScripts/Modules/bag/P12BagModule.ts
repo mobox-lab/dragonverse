@@ -6,8 +6,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import { Regulator } from "gtoolkit";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 
-export class TdP12BagModuleData extends JModuleData {
-}
+export class TdP12BagModuleData extends JModuleData {}
 
 export class P12BagModuleC extends JModuleC<P12BagModuleS, TdP12BagModuleData> {
     private _requestRegulator = new Regulator(1e3);
@@ -51,6 +50,10 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, TdP12BagModuleData> {
 
     public consumePotion(count: number) {
         return this.server.net_consumePotion(count);
+    }
+
+    public consumeSweep(count: number) {
+        return this.server.net_consumeSweep(count);
     }
 
     public net_setData(map: Map<P12ItemResId, number>) {
@@ -111,7 +114,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
                 [P12ItemResId.StaminaPotion, 0],
                 [P12ItemResId.SweepToken, 0],
             ]);
-            res.list.forEach(item => map.set(item.resId, item.unuse));
+            res.list.forEach((item) => map.set(item.resId, item.unuse));
             this.getClient(player).net_setData(map);
         } catch (error) {
             Log4Ts.error(P12BagModuleS, error);
@@ -146,6 +149,27 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
         return this.consumePotion(player, count);
+    }
+
+    /**
+     * 使用扫荡券
+     * @param {mw.Player} player
+     * @param {number} count 使用数量
+     */
+    private async consumeSweep(player: mw.Player, count: number) {
+        try {
+            const res = await this.authS.consumeSweep(player.userId, GameServiceConfig.SCENE_NAME, count);
+            this.getClient(player).net_setItem(P12ItemResId.SweepToken, res.balance);
+        } catch (error) {
+            Log4Ts.error(P12BagModuleS, error);
+        }
+    }
+
+    public net_consumeSweep(count: number) {
+        const player = this.currentPlayer;
+        if (!player) return;
+        Log4Ts.log(P12BagModuleS, `player ${player.userId} use sweep token ${count}`);
+        return this.consumeSweep(player, count);
     }
 
     public net_refreshBagItem() {
