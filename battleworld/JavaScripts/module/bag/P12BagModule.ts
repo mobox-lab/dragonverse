@@ -53,6 +53,10 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
         return this.server.net_consumePotion(count);
     }
 
+    public consumeSweep(count: number) {
+        return this.server.net_consumeSweep(count);
+    }
+
     public net_setData(map: Map<P12ItemResId, number>) {
         this._itemsMap = map;
     }
@@ -146,6 +150,27 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
         return this.consumePotion(player, count);
+    }
+
+    /**
+     * 使用扫荡券
+     * @param {mw.Player} player
+     * @param {number} count 使用数量
+     */
+    private async consumeSweep(player: mw.Player, count: number) {
+        try {
+            const res = await this.authS.consumeSweep(player.userId, GameServiceConfig.SCENE_NAME, count);
+            this.getClient(player).net_setItem(P12ItemResId.SweepToken, res.balance);
+        } catch (error) {
+            Log4Ts.error(P12BagModuleS, error);
+        }
+    }
+
+    public net_consumeSweep(count: number) {
+        const player = this.currentPlayer;
+        if (!player) return;
+        Log4Ts.log(P12BagModuleS, `player ${player.userId} use sweep token ${count}`);
+        return this.consumeSweep(player, count);
     }
 
     public net_refreshBagItem() {
