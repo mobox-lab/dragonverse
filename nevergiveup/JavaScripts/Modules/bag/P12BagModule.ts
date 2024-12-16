@@ -156,13 +156,9 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
      * @param {mw.Player} player
      * @param {number} count 使用数量
      */
-    private async consumeSweep(player: mw.Player, count: number) {
-        try {
-            const res = await this.authS.consumeSweep(player.userId, GameServiceConfig.SCENE_NAME, count);
-            this.getClient(player).net_setItem(P12ItemResId.SweepToken, res.balance);
-        } catch (error) {
-            Log4Ts.error(P12BagModuleS, error);
-        }
+    public async consumeSweep(player: mw.Player, count: number) {
+        const res = await this.authS.consumeSweep(player.userId, GameServiceConfig.SCENE_NAME, count);
+        this.getClient(player).net_setItem(P12ItemResId.SweepToken, res.balance);
     }
 
     public net_consumeSweep(count: number) {
