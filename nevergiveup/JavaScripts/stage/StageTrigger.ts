@@ -398,7 +398,7 @@ export default class StageTrigger extends Script {
                                 mw.Event.dispatchToClient(
                                     player,
                                     GlobalEventName.ServerTipsEventName,
-                                    GameConfig.Language.getElement("Stage_Select_9").Value
+                                    GameConfig.Language.getElement("Stage_Select_10").Value
                                 );
                                 Log4Ts.error(P12BagModuleS, error);
                             });
