@@ -385,12 +385,23 @@ export default class StageTrigger extends Script {
                             );
                             return false;
                         }
-                        ModuleService.getModule(EnergyModuleS).consume(
-                            playerID,
-                            GameServiceConfig.STAMINA_COST_START_GAME * times
-                        );
-                        ModuleService.getModule(P12BagModuleS).net_consumeSweep(times);
-                        GameManager.sweepGame(ids, this.stageCfgId, times);
+                        ModuleService.getModule(P12BagModuleS)
+                            .consumeSweep(player, times)
+                            .then(() => {
+                                ModuleService.getModule(EnergyModuleS).consume(
+                                    playerID,
+                                    GameServiceConfig.STAMINA_COST_START_GAME * times
+                                );
+                                GameManager.sweepGame(ids, this.stageCfgId, times);
+                            })
+                            .catch((error) => {
+                                mw.Event.dispatchToClient(
+                                    player,
+                                    GlobalEventName.ServerTipsEventName,
+                                    GameConfig.Language.getElement("Stage_Select_9").Value
+                                );
+                                Log4Ts.error(P12BagModuleS, error);
+                            });
                         return true;
                     }
                 }
