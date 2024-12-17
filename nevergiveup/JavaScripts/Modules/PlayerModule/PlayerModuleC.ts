@@ -166,6 +166,19 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         }
     }
 
+    public onPerfectSweep() {
+        this.data.perfectCompleteStageCount.sum = this.data.perfectCompleteStageCount.sum + 1;
+        this.data.perfectCompleteStageCount.daily = this.data.perfectCompleteStageCount.daily + 1;
+        this.server.net_SaveSumCount(
+            this.data.completeStageCount.sum,
+            this.data.completeStageCount.daily,
+            this.data.killEnemyCount.sum,
+            this.data.killEnemyCount.daily,
+            this.data.perfectCompleteStageCount.sum,
+            this.data.perfectCompleteStageCount.daily
+        );
+    }
+
     public onStageCompleted(isPerfect: boolean, index?: number) {
         this.data.completeStageCount.sum = this.data.completeStageCount.sum + 1;
         this.data.completeStageCount.daily = this.data.completeStageCount.daily + 1;
@@ -185,7 +198,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         );
         this._enemyCount = 0;
 
-        const infinityWaveTimesMax = Math.max(this._waveCount, this.data.infinityWaveTimes)
+        const infinityWaveTimesMax = Math.max(this._waveCount, this.data.infinityWaveTimes);
         this.data.infinityWaveTimes = infinityWaveTimesMax;
         this.server.net_saveInfinityWaveTimes(infinityWaveTimesMax);
         this._waveCount = 0;

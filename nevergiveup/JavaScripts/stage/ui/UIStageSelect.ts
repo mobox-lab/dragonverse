@@ -96,7 +96,7 @@ export class UIStageSelect extends StageSelect_Generate {
     public leaveCountDown: number = 10;
     public leaveCountTimerId: number = 0;
     public sweepBalanceData: number = 0;
-    public sweepCount: number = 0;
+    public sweepCount: number = 1;
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -168,7 +168,7 @@ export class UIStageSelect extends StageSelect_Generate {
             this.refreshSweepBalance();
         });
         this.btnMinus.onClicked.add(() => {
-            if (this.sweepCount === 0) {
+            if (this.sweepCount === 1) {
                 return;
             }
             this.sweepCount = this.sweepCount - 1;
@@ -203,8 +203,8 @@ export class UIStageSelect extends StageSelect_Generate {
     }
 
     initSweepCount() {
-        this.sweepCount = 0;
-        this.sweepNumber.text = "0";
+        this.sweepCount = 1;
+        this.sweepNumber.text = "1";
     }
 
     // 从打开的时候就开始倒计时10s，倒计时结束自动执行这个
@@ -387,10 +387,10 @@ export class UIStageSelect extends StageSelect_Generate {
         const isInfiniteOrTrainingMode = Utils.isInfiniteOrTrainingMode(stageCfg.groupIndex);
         if (skills?.length) {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Visible);
-            this.bg.size = new Vector2(444, 548 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
+            this.bg.size = new Vector2(444, 648 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
         } else {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Collapsed);
-            this.bg.size = new Vector2(444, 372 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
+            this.bg.size = new Vector2(444, 472 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
         }
 
         this.selectedMonsterSkillIndex = 0;

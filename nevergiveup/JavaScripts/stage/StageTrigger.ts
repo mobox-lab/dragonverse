@@ -20,6 +20,7 @@ import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
 import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
 import { P12BagModuleS } from "../Modules/bag/P12BagModule";
+import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 
 export namespace StageTriggerInst {
     export let posMap: { [stageId: number]: Vector } = {};
@@ -77,6 +78,7 @@ export default class StageTrigger extends Script {
             });
         } else {
             mw.Event.addServerListener("TD_STAGE_SELECT_CLOSE_UI", this.closeUI);
+            mw.Event.addServerListener("TD_STAGE_SWEEP_FINISH", this.sweepEnd);
             this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
                 this.stageWorldIndex,
                 this.stageGroupId,
@@ -133,6 +135,10 @@ export default class StageTrigger extends Script {
         TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
             UIService.hide(UIStageSelect);
         });
+    };
+
+    public sweepEnd = () => {
+        ModuleService.getModule(PlayerModuleC).onPerfectSweep();
     };
 
     onTrigger() {
@@ -393,12 +399,13 @@ export default class StageTrigger extends Script {
                                     GameServiceConfig.STAMINA_COST_START_GAME * times
                                 );
                                 GameManager.sweepGame(ids, this.stageCfgId, times);
+                                mw.Event.dispatchToClient(player, "TD_STAGE_SWEEP_FINISH");
                             })
                             .catch((error) => {
                                 mw.Event.dispatchToClient(
                                     player,
                                     GlobalEventName.ServerTipsEventName,
-                                    GameConfig.Language.getElement("Stage_Select_10").Value
+                                    GameConfig.Language.getElement("Stage_Select_9").Value
                                 );
                                 Log4Ts.error(P12BagModuleS, error);
                             });
