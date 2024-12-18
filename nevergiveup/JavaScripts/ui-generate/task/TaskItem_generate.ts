@@ -113,6 +113,34 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.txt_num3_Internal
 	}
+	private mCanvas_reward4_Internal: mw.Canvas
+	public get mCanvas_reward4(): mw.Canvas {
+		if(!this.mCanvas_reward4_Internal&&this.uiWidgetBase) {
+			this.mCanvas_reward4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/mCanvas_reward4') as mw.Canvas
+		}
+		return this.mCanvas_reward4_Internal
+	}
+	private img_Bg4_Internal: mw.Image
+	public get img_Bg4(): mw.Image {
+		if(!this.img_Bg4_Internal&&this.uiWidgetBase) {
+			this.img_Bg4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/mCanvas_reward4/img_Bg4') as mw.Image
+		}
+		return this.img_Bg4_Internal
+	}
+	private img_Icon4_Internal: mw.Image
+	public get img_Icon4(): mw.Image {
+		if(!this.img_Icon4_Internal&&this.uiWidgetBase) {
+			this.img_Icon4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/mCanvas_reward4/img_Icon4') as mw.Image
+		}
+		return this.img_Icon4_Internal
+	}
+	private txt_num4_Internal: mw.TextBlock
+	public get txt_num4(): mw.TextBlock {
+		if(!this.txt_num4_Internal&&this.uiWidgetBase) {
+			this.txt_num4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/mCanvas_reward4/txt_num4') as mw.TextBlock
+		}
+		return this.txt_num4_Internal
+	}
 	private canvasReward_Internal: mw.Canvas
 	public get canvasReward(): mw.Canvas {
 		if(!this.canvasReward_Internal&&this.uiWidgetBase) {
@@ -257,6 +285,9 @@ export default class TaskItem_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txt_num3)
+	   
+	
+	   this.initLanguage(this.txt_num4)
 	   
 	
 	   this.initLanguage(this.txt_doing)
