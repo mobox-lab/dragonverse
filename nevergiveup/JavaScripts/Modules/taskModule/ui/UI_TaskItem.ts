@@ -104,10 +104,6 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         this.mCanvas_reward3.visibility = mw.SlateVisibility.Collapsed;
         this.mCanvas_reward4.visibility = mw.SlateVisibility.Collapsed;
         if (data.cfg) {
-            if (data.cfg.dragonPoints) {
-                this.mCanvas_reward4.visibility = mw.SlateVisibility.Visible;
-                this.txt_num4.text = data.cfg.dragonPoints.toString();
-            }
             data.cfg.rewards?.forEach((i, index) => {
                 if (index < 3) {
                     const reward = GameConfig.Item.getElement(i[0]);
@@ -131,6 +127,13 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
                     }
                 }
             });
+            if (data.cfg.dragonPoints) {
+                const reward = GameConfig.Item.getElement(4);
+                const length = data.cfg.rewards?.length || 0;
+                this[`mCanvas_reward${length + 1}`].visibility = mw.SlateVisibility.Visible;
+                this[`txt_num${length + 1}`].text = data.cfg.dragonPoints.toString();
+                this[`img_Icon${length + 1}`].imageGuid = reward.itemImgGuid;
+            }
         }
     }
 }
