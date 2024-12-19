@@ -34,9 +34,7 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
      * 设置选中
      * @param bool 是否选中
      */
-    setSelect(bool: boolean): void {
-    }
-
+    setSelect(bool: boolean): void {}
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
@@ -44,20 +42,20 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         this.btnReward.touchMethod = ButtonTouchMethod.PreciseTap;
         this.btnReward.onClicked.add(async () => {
             await ModuleService.getModule(TaskModuleC).taskFinishAction(this._taskData);
-        })
+        });
         // this.btnDoing.onClicked.add(() => {
         //     GuideManager.guideToTask(this._taskData.taskID);
         //     // TipsManager.showTips(GameConfig.Language.getElement("Text_NoFinishTaskTips").Value);
         // })
         this.btnLock.onClicked.add(() => {
             TipsManager.showTips(GameConfig.Language.getElement("Text_TaskLock").Value);
-        })
+        });
     }
 
     /**
      * 设置ui的任务data
      * @param data 任务数据
-     * @returns 
+     * @returns
      */
     setData(data: Task): void {
         if (data == null || data.taskID == null) return;
@@ -68,7 +66,7 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         this.txt_Des.text = data.taskInfoUI;
         // this.txt_Des.text = StringUtil.format(cfg.taskInfo, data.totalSolveTime);
         this.txt_Process.text = Utils.formatNumber(data.curSolveTime) + "/" + Utils.formatNumber(data.totalSolveTime);
-        const percent = data?.totalSolveTime ? ((data?.curSolveTime ?? 0) / data.totalSolveTime): 0;
+        const percent = data?.totalSolveTime ? (data?.curSolveTime ?? 0) / data.totalSolveTime : 0;
         this.progressBar.percent = percent;
         this.progressBar.currentValue = percent;
         switch (data.taskState) {
@@ -86,16 +84,15 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
                 break;
         }
         this.setReward(data);
-        let keys = Object.values(EmTaskState).filter((key) => isNaN(Number(key)));;
+        let keys = Object.values(EmTaskState).filter((key) => isNaN(Number(key)));
         for (let i = 0; i < keys.length; i++) {
-            this["canvas" + keys[i]].visibility = EmTaskState[keys[i]] == data.taskState ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+            this["canvas" + keys[i]].visibility =
+                EmTaskState[keys[i]] == data.taskState ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
         }
         // if (data.isMain && (data.taskState == EmTaskState.Doing || data.taskState == EmTaskState.Reward)) {
         //     mw.UIService.getUI(MainUI).setMainTask(data);
         // }
     }
-
-
 
     /**
      * 设置奖励UI
@@ -105,14 +102,21 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         this.mCanvas_reward1.visibility = mw.SlateVisibility.Collapsed;
         this.mCanvas_reward2.visibility = mw.SlateVisibility.Collapsed;
         this.mCanvas_reward3.visibility = mw.SlateVisibility.Collapsed;
+        this.mCanvas_reward4.visibility = mw.SlateVisibility.Collapsed;
         if (data.cfg) {
+            if (data.cfg.dragonPoints) {
+                this.mCanvas_reward4.visibility = mw.SlateVisibility.Visible;
+                this.txt_num4.text = data.cfg.dragonPoints.toString();
+            }
             data.cfg.rewards?.forEach((i, index) => {
                 if (index < 3) {
                     const reward = GameConfig.Item.getElement(i[0]);
-                    if (reward) {//开始设置奖励UI
+                    if (reward) {
+                        //开始设置奖励UI
                         this[`mCanvas_reward${index + 1}`].visibility = mw.SlateVisibility.Visible;
                         this[`txt_num${index + 1}`].text = i[1];
-                        if (reward.itemType == ItemType.Card) {//塔的图标额外处理
+                        if (reward.itemType == ItemType.Card) {
+                            //塔的图标额外处理
                             const cfg = GameConfig.Tower.getElement(reward.itemTypeid);
                             if (cfg) {
                                 Utils.setImageByAsset(this[`img_Icon${index + 1}`], cfg);
@@ -123,10 +127,10 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
                             // this[`img_Bg${index + 1}`].imageGuid = Reward.getGuid(reward.itemLevel);
                         }
                     } else {
-                        console.log('hsf=======UI显示找不到奖励=============== ', JSON.stringify(i[0]))
+                        console.log("hsf=======UI显示找不到奖励=============== ", JSON.stringify(i[0]));
                     }
                 }
-            })
+            });
         }
     }
 }

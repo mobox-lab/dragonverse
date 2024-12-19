@@ -78,15 +78,17 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
                 });
 
                 data.totalPoints += cfg?.dragonPoints;
-
-                Reward.grantReward(this.currentPlayer, cfg.rewards, null, taskId);
+                const rewards = cfg.rewards;
                 if (cfg?.dragonPoints) {
                     ModuleService.getModule(EnergyModuleS).addPoints(userId, {
                         taskId: taskId?.toString() ?? "",
                         taskPoint: cfg.dragonPoints,
                         subGameId: "defense",
                     });
+                    rewards.push([4, cfg?.dragonPoints]);
                 }
+                Reward.grantReward(this.currentPlayer, rewards, null, taskId);
+
                 data.save(false);
                 return true;
             }
