@@ -17,10 +17,10 @@ export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
             UIService.hide(SenzuBeanConfirmPanel);
         });
         // 去购买道具
-        // this.btn_UnConfirm_Use.onClicked.add(() => {
-        //     UIService.hide(SenzuBeanConfirmPanel);
-        //     UIService.show(P12ShopPanel);
-        // });
+        this.btn_UnConfirm_Use.onClicked.add(() => {
+            UIService.hide(SenzuBeanConfirmPanel);
+            UIService.show(P12ShopPanel);
+        });
         // 使用道具
         this.btn_Confirm_Use.onClicked.add(() => {
             UIService.hide(SenzuBeanConfirmPanel);

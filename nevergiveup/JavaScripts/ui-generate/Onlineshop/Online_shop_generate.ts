@@ -74,7 +74,7 @@ export default class Online_shop_Generate extends UIScript {
 	private can_ShopItem_Internal: mw.Canvas
 	public get can_ShopItem(): mw.Canvas {
 		if(!this.can_ShopItem_Internal&&this.uiWidgetBase) {
-			this.can_ShopItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/scr_ShopItem/can_ShopItem') as mw.Canvas
+			this.can_ShopItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_ShopItem') as mw.Canvas
 		}
 		return this.can_ShopItem_Internal
 	}

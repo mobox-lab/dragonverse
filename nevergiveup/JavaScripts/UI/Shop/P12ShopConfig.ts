@@ -36,4 +36,14 @@ export const P12ShopConfig: P12ShopItem[] = [
         tokenName: TokenNameEnum.MDBL,
         effect: 1,
     },
+    {
+        resId: P12ItemResId.SweepToken, // 扫荡券
+        consumeId: ConsumeId.SweepToken,
+        name: "Online_shop016",
+        value: 169000000000000000000n,
+        icon: "480798",
+        description: "Online_shop017",
+        tokenName: TokenNameEnum.MDBL,
+        effect: 1,
+    },
 ];

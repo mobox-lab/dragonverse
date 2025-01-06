@@ -1439,5 +1439,9 @@ https://mobox.gitbook.io/cn-long-yu-bao-wei-zhan-ru-men-shou-ce-dragon-defense*/
 	get Stage_Select_10():ILanguageElement{return this.getElement(20711)};
 	/**DragonPoints*/
 	get Item_nameKey_4():ILanguageElement{return this.getElement(20712)};
+	/**扫荡券*/
+	get Online_shop016():ILanguageElement{return this.getElement(20713)};
+	/**快速通关已经取得完美胜利的关卡*/
+	get Online_shop017():ILanguageElement{return this.getElement(20714)};
 
 }
