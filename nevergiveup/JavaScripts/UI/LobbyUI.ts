@@ -116,13 +116,13 @@ export default class LobbyUI extends LobbyUI_Generate {
             }
         });
 
-        // this.shopBtn.onClicked.add(() => {
-        //     if (UIService.getUI(P12ShopPanel)?.isShowing) {
-        //         UIService.hide(P12ShopPanel);
-        //     } else {
-        //         UIService.show(P12ShopPanel);
-        //     }
-        // });
+        this.shopBtn.onClicked.add(() => {
+            if (UIService.getUI(P12ShopPanel)?.isShowing) {
+                UIService.hide(P12ShopPanel);
+            } else {
+                UIService.show(P12ShopPanel);
+            }
+        });
 
         this.addBtn.onClicked.add(() => {
             UIService.show(SenzuBeanConfirmPanel);

@@ -127,13 +127,13 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
                     }
                 }
             });
-            if (data.cfg.dragonPoints) {
-                const reward = GameConfig.Item.getElement(4);
-                const length = data.cfg.rewards?.length || 0;
-                this[`mCanvas_reward${length + 1}`].visibility = mw.SlateVisibility.Visible;
-                this[`txt_num${length + 1}`].text = data.cfg.dragonPoints.toString();
-                this[`img_Icon${length + 1}`].imageGuid = reward.itemImgGuid;
-            }
+            // if (data.cfg.dragonPoints) {
+            //     const reward = GameConfig.Item.getElement(4);
+            //     const length = data.cfg.rewards?.length || 0;
+            //     this[`mCanvas_reward${length + 1}`].visibility = mw.SlateVisibility.Visible;
+            //     this[`txt_num${length + 1}`].text = data.cfg.dragonPoints.toString();
+            //     this[`img_Icon${length + 1}`].imageGuid = reward.itemImgGuid;
+            // }
         }
     }
 }
