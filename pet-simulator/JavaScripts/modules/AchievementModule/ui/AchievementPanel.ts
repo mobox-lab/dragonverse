@@ -204,15 +204,15 @@ class AchievementItem {
         this.mText_Award.text = rewardAmount;
         this.mImage_AwardType.imageGuid = rewardicon;
 
-        if(achievementsElement?.dragonPoints){
-            Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.HitTestInvisible);
-            Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.HitTestInvisible);
-            this.mText_Award2.text = achievementsElement.dragonPoints.toString();
-            this.mImage_AwardType2.imageGuid = '480835';
-        } else {
-            Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.Collapsed);
-            Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.Collapsed);
-        }
+        // if(achievementsElement?.dragonPoints){
+        //     Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.HitTestInvisible);
+        //     Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.HitTestInvisible);
+        //     this.mText_Award2.text = achievementsElement.dragonPoints.toString();
+        //     this.mImage_AwardType2.imageGuid = '480835';
+        // } else {
+        //     Gtk.trySetVisibility(this.mText_Award2, SlateVisibility.Collapsed);
+        //     Gtk.trySetVisibility(this.mImage_AwardType2, SlateVisibility.Collapsed);
+        // }
     }
 
     /**根据难易程度更新背景颜色 */
