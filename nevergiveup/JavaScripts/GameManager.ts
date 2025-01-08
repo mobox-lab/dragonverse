@@ -371,11 +371,11 @@ export namespace GameManager {
                     }
                 } else if (item.itemType == 3) {
                     // 科技点
-                    rewardsData.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    rewardsData.push({ guid: item.itemImgGuid, amount: amount * times, type: item.itemType });
                     ModuleService.getModule(PlayerModuleS).changeTechPoint(player, amount * times);
                 } else if (item.itemType == 4) {
                     // 经验
-                    rewardsData.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
+                    rewardsData.push({ guid: item.itemImgGuid, amount: amount * times, type: item.itemType });
                     ModuleService.getModule(PlayerModuleS).changeExp(player, amount * times);
                 }
             }
