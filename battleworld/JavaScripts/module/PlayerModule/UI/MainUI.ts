@@ -252,14 +252,14 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         // 打开商店UI
-        // KeyOperationManager.getInstance().bindButton(this, Keys.H, this.mBtn_OnlineShop);
-        // this.mBtn_OnlineShop.onClicked.add(() => {
-        //     if (UIService.getUI(P12ShopPanel)?.isShowing) {
-        //         UIService.hide(P12ShopPanel);
-        //     } else {
-        //         UIService.show(P12ShopPanel);
-        //     }
-        // });
+        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.mBtn_OnlineShop);
+        this.mBtn_OnlineShop.onClicked.add(() => {
+            if (UIService.getUI(P12ShopPanel)?.isShowing) {
+                UIService.hide(P12ShopPanel);
+            } else {
+                UIService.show(P12ShopPanel);
+            }
+        });
 
         this.mBtn_Battle_Plus.onClicked.add(() => {
             UIService.show(SenzuBeanConfirmPanel);

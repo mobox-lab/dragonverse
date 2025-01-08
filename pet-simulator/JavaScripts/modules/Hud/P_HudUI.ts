@@ -191,9 +191,9 @@ export class P_HudUI extends Hud_Generate {
         });
 
         // P12 商城
-        // this.mBtn_Onlinehsop.onClicked.add(() => {
-        //     UIService.show(P12ShopPanel);
-        // });
+        this.mBtn_Onlinehsop.onClicked.add(() => {
+            UIService.show(P12ShopPanel);
+        });
 
         // 消费道具
         this.btn_Plus.onClicked.add(() => {
