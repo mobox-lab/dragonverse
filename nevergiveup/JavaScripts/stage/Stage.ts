@@ -640,6 +640,7 @@ export class StageS {
             type: 1,
             rewards: [],
             firsttime: 0,
+            InfinityRound: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
         };
         if (this.settleData.hasWin) {
             if (this._hp == this._maxHp) {
