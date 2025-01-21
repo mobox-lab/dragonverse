@@ -192,6 +192,7 @@ addGMCommand(
                 finish: 20, // 最后一波完成度 时间 20 30
                 recordTime: 0, // 上榜时间
                 detail: [], // 装备卡片的 ids
+                subDetail: {},
             })
             .then(() => {
                 Log4Ts.log(AuthModuleS, `report td rank data success.`);
