@@ -775,6 +775,7 @@ export class StageS {
                     finish: time,
                     recordTime: Date.now(), // 记录时间 number
                     detail: cards,
+                    subDetail: { cards, talent, dragonBlessList, nickName: player.nickname },
                 };
                 ModuleService.getModule(AuthModuleS)?.reportTDRankData(player.playerId, rankInfo);
             }

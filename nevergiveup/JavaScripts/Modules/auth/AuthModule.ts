@@ -504,7 +504,6 @@ interface ConsumeSweepRespData {
      * 剩余数量.
      */
     balance: number;
-   
 }
 
 /**
@@ -594,6 +593,7 @@ export type UpdateTDRankDataNeedFill = {
     finish: number; // 最后一波完成度 时间 20 30
     recordTime: number; // 上榜时间
     detail: number[]; // 装备卡片的 ids
+    subDetail: any;
 };
 
 interface UpdateTDRankDataReq extends UserDataReq {
