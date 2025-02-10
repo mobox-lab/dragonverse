@@ -14,6 +14,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { EmTaskType } from "./TaskModuleC";
 import TalentModuleS from "../talent/TalentModuleS";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
+import Utils from "../../Utils";
 
 dayjs.extend(utc);
 
@@ -82,10 +83,21 @@ export class TaskModuleDataHelper extends Subdata {
             console.log("#debug judgeIsNewDay isNewDay:", isNewDay);
             if (isNewDay) {
                 this.clearAllDaily(player, nowTime);
+                Utils.logP12Info("A_refreshDaily", {
+                    isNewDay: true,
+                    userId: player.userId,
+                    preTime: preTime,
+                    nowTime: nowTime,
+                });
                 return true;
             }
             return false;
         }
+        Utils.logP12Info("A_refreshDaily", {
+            isNewDay: false,
+            userId: player.userId,
+            nowTime: nowTime,
+        });
         this.clearAllDaily(player, nowTime);
         return true;
     }
