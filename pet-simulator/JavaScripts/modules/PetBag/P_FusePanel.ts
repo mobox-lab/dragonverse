@@ -132,7 +132,8 @@ export class P_FusePanel extends Fusepanel_Generate {
     private changeUIText() {
         let count = this.curSelectPets.length;
         const data = DataCenterC.getData(PetBagModuleData);
-        data.clearFuseTodayIfNewDay();
+        const userId = Player.localPlayer.userId;
+        data.clearFuseTodayIfNewDay({ userId })
         let fuseNumToday = data?.fuseNumToday ?? 0;
         const cost = utils.fuseCostCompute(fuseNumToday);
 

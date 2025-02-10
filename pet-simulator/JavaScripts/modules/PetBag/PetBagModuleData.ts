@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import { TimerModuleUtils } from "../TimeModule/time";
 
 export enum BagItemKey {
-    itemStart = 100
+    itemStart = 100,
 }
 
 /**宠物item废弃  */
@@ -44,7 +44,6 @@ export class petItemDataNew {
         this.p = new petInfoNew();
         this.enchantCnt = 0;
     }
-
 }
 
 /**宠物训练 */
@@ -127,8 +126,8 @@ export enum PSStatisticPetKey {
      */
     creSource = 1,
     create = 2,
-    update = 3
-} 
+    update = 3,
+}
 /**
  * 宠物模拟器 统计信息 压缩信息 creSourceStr.
  */
@@ -166,8 +165,7 @@ export class PetBagModuleData extends Subdata {
     private petStatisticMap: { [key: number]: PetSimulatorStatisticPersistPetObj } = {};
 
     @Decorator.persistence()
-    private petStatisticMapNew: number[][] = [];// PSStatisticPersistPetKey
-
+    private petStatisticMapNew: number[][] = []; // PSStatisticPersistPetKey
 
     /**训练宠物集合 */
     @Decorator.persistence()
@@ -236,7 +234,6 @@ export class PetBagModuleData extends Subdata {
         return Object.assign({}, this.bagContainerNew);
     }
 
-
     get version(): number {
         return 8;
     }
@@ -261,26 +258,26 @@ export class PetBagModuleData extends Subdata {
                 this.checkBagCapacity();
                 this.currentVersion = 5;
             }
-            if(this.currentVersion == 5) {
+            if (this.currentVersion == 5) {
                 dataSave = true;
                 // if(SystemUtil.isServer()) this.cleanPetOverBag();
                 this.currentVersion = 6;
             }
-            if(this.currentVersion == 6) {
+            if (this.currentVersion == 6) {
                 dataSave = true;
                 // if(SystemUtil.isServer()) this.cleanOldPetStatistic();
                 this.currentVersion = 7;
             }
-            if(this.currentVersion == 7) {
+            if (this.currentVersion == 7) {
                 dataSave = true;
                 // if(SystemUtil.isServer()) this.reduceDataSize();
                 this.currentVersion = 8;
             }
         }
         // this.petStatisticMap = {};
-        mw.setTimeout(()=>{
+        mw.setTimeout(() => {
             this.save(dataSave);
-        },0.5e3)
+        }, 0.5e3);
     }
     /** 合成时使用 备份恢复 */
     public recoverBagItems(preBagItems: { [key: number]: petItemDataNew }) {
@@ -297,7 +294,7 @@ export class PetBagModuleData extends Subdata {
     //     }
     // }
     // public cleanPetOverBag() {// 补救措施
-    //     if(this.CurBagCapacity <= this.BagCapacity) return; // 当前背包宠物数量 <= 总容量 不需要裁剪 
+    //     if(this.CurBagCapacity <= this.BagCapacity) return; // 当前背包宠物数量 <= 总容量 不需要裁剪
     //     // 裁剪 先排序 超出的销毁并记录
     //     const sortedPets = this.sortBag();
     //     sortedPets.filter(p => !this.curEquipPet.includes(p.k)).sort((a, b) => {
@@ -315,7 +312,7 @@ export class PetBagModuleData extends Subdata {
     //     });
     //     const delNum = this.CurBagCapacity - this.BagCapacity;
     //     const delPets = sortedPets.slice(sortedPets.length - delNum);
-    //     Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k))); 
+    //     Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k)));
     //     const userId = this["mUserId"] as string;
     //     const delKeys = delPets.map((p) => p.k);
     //     mw.setTimeout(()=>{
@@ -346,25 +343,55 @@ export class PetBagModuleData extends Subdata {
     //                 data[userId] = data[userId].concat(recordInfo[userId]);
     //             } else Object.assign(data, recordInfo);
     //             DataStorage.asyncSetData(dataKey, data);
-    //         } else 
+    //         } else
     //             DataStorage.asyncSetData(dataKey, recordInfo);
     //     });
     // }
-    public clearFuseTodayIfNewDay() {
+    public clearFuseTodayIfNewDay(log: { userId: string }) {
         const nowTime = dayjs.utc().valueOf();
-        if(this.lastFuseRefreshTimestamp) {
+        if (this.lastFuseRefreshTimestamp) {
             const preTime = this.lastFuseRefreshTimestamp;
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
-            if(isNewDay) {
-                console.log("#time clearFuseTodayIfNewDay fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
+            if (isNewDay) {
+                console.log(
+                    "#time clearFuseTodayIfNewDay fuseNumToday:" +
+                        this.fuseNumToday +
+                        " lastFuseRefreshTimestamp:" +
+                        this.lastFuseRefreshTimestamp
+                );
+                const oldFuseNumToday = this.fuseNumToday;
+                const oldFuseRefreshTime = this.lastFuseRefreshTimestamp;
                 this.fuseNumToday = 0;
                 this.lastFuseRefreshTimestamp = nowTime;
+                utils.logP12Info("P_refreshDaily", {
+                    isNewDay: true,
+                    ...log,
+                    oldFuseNum: oldFuseNumToday,
+                    newFuseNum: this.fuseNumToday,
+                    oldRefreshTime: oldFuseRefreshTime,
+                    newRefreshTime: this.lastFuseRefreshTimestamp,
+                });
                 this.save(true);
             }
         } else {
-            console.log("#time clearFuseTodayIfNewDay first fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
+            console.log(
+                "#time clearFuseTodayIfNewDay first fuseNumToday:" +
+                    this.fuseNumToday +
+                    " lastFuseRefreshTimestamp:" +
+                    this.lastFuseRefreshTimestamp
+            );
+            const oldFuseNumToday = this.fuseNumToday;
+            const oldFuseRefreshTime = this.lastFuseRefreshTimestamp;
             this.fuseNumToday = 0;
             this.lastFuseRefreshTimestamp = nowTime;
+            utils.logP12Info("P_refreshDaily", {
+                isNewDay: false,
+                ...log,
+                oldFuseNum: oldFuseNumToday,
+                newFuseNum: this.fuseNumToday,
+                oldRefreshTime: oldFuseRefreshTime,
+                newRefreshTime: this.lastFuseRefreshTimestamp,
+            });
             this.save(true);
         }
     }
@@ -380,53 +407,63 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**清理宠物统计数据 去除已经销毁的 */
-	public delPersistPetStatisticByKeys(delKeys: number[]) { 
+    public delPersistPetStatisticByKeys(delKeys: number[]) {
         this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => !delKeys.includes(p[PSStatisticPetKey.petKey]));
     }
-	// public cleanOldPetStatistic() {
+    // public cleanOldPetStatistic() {
     //     const petStatisticMap = this.petStatisticMap;
     //     for (const key in petStatisticMap) {
     //         const petInfo = petStatisticMap[key] as any;
-    //         if(petInfo?.status === "destroyed") { 
+    //         if(petInfo?.status === "destroyed") {
     //             delete petStatisticMap[key];
     //         }
     //     }
     // }
 
-	/**更新宠物统计数据 - 新增宠物 */
-	public updatePetStatistic(petInfo: petItemDataNew, isUpdate = true, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
-		const key = petInfo?.k;
-		if(!key) {
-			Log4Ts.warn(PetBagModuleData, " 更新宠物统计数据 - key错误:", key);
-			return;
-		}
-		const now = Math.floor(Date.now() / 1000);
+    /**更新宠物统计数据 - 新增宠物 */
+    public updatePetStatistic(
+        petInfo: petItemDataNew,
+        isUpdate = true,
+        creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"
+    ) {
+        const key = petInfo?.k;
+        if (!key) {
+            Log4Ts.warn(PetBagModuleData, " 更新宠物统计数据 - key错误:", key);
+            return;
+        }
+        const now = Math.floor(Date.now() / 1000);
 
-		const petStatistic = [key, CreSourceStr[creSource] ?? CreSourceStr["孵化"], now ?? 0, now ?? 0];
+        const petStatistic = [key, CreSourceStr[creSource] ?? CreSourceStr["孵化"], now ?? 0, now ?? 0];
         const prePetDataIdx = this.petStatisticMapNew.findIndex((p) => p[PSStatisticPetKey.petKey] === key);
-        if(prePetDataIdx === -1) {
+        if (prePetDataIdx === -1) {
             this.petStatisticMapNew.push(petStatistic);
-        } else { // 宠物已存在 更新信息。
+        } else {
+            // 宠物已存在 更新信息。
             const prePetData = this.petStatisticMapNew[prePetDataIdx];
-			petStatistic[PSStatisticPetKey.create] = prePetData[PSStatisticPetKey.create];
-			if(!isUpdate) petStatistic[PSStatisticPetKey.update] = prePetData[PSStatisticPetKey.update]; // 不是update则不更新更新时间
-            if(!creSource) petStatistic[PSStatisticPetKey.creSource] = prePetData[PSStatisticPetKey.creSource];
-			this.petStatisticMapNew[prePetDataIdx] = petStatistic;
-		} 
-		Log4Ts.log(PetBagModuleData, " 更新宠物统计数据 petInfo:", JSON.stringify(petInfo) + " petStatistic:", JSON.stringify(petStatistic));
-		return petStatistic;
-	}
+            petStatistic[PSStatisticPetKey.create] = prePetData[PSStatisticPetKey.create];
+            if (!isUpdate) petStatistic[PSStatisticPetKey.update] = prePetData[PSStatisticPetKey.update]; // 不是update则不更新更新时间
+            if (!creSource) petStatistic[PSStatisticPetKey.creSource] = prePetData[PSStatisticPetKey.creSource];
+            this.petStatisticMapNew[prePetDataIdx] = petStatistic;
+        }
+        Log4Ts.log(
+            PetBagModuleData,
+            " 更新宠物统计数据 petInfo:",
+            JSON.stringify(petInfo) + " petStatistic:",
+            JSON.stringify(petStatistic)
+        );
+        return petStatistic;
+    }
 
     public getFilteredDelAbleKeys(keys: number[], sortByAttack: boolean = false): number[] | undefined {
         if (keys.length == this.CurBagCapacity) return undefined;
 
         let resultPetInfo: petItemDataNew[] = keys
-            .map(k => this.bagItemsByKey(k) ?? undefined)
-            .filter(item => item != undefined);
+            .map((k) => this.bagItemsByKey(k) ?? undefined)
+            .filter((item) => item != undefined);
         if (sortByAttack) {
             resultPetInfo.sort((a, b) => b.p.a - a.p.a);
         }
-        return resultPetInfo.map(item => item.k);
+        return resultPetInfo.map((item) => item.k);
     }
 
     /**根据Key获取物品 */
@@ -439,7 +476,15 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
+    public addBagItem(
+        id: number,
+        atk: number,
+        name: string,
+        addTime: number | undefined,
+        logInfo: { logObj: Object; logName: string } | undefined,
+        playerID: number,
+        creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"
+    ): boolean {
         if (this.CurBagCapacity >= this.BagCapacity) {
             return false;
         }
@@ -471,32 +516,36 @@ export class PetBagModuleData extends Subdata {
             petAtk: atk,
             petName: name,
             petBuffs: Array.from(this.bagContainerNew[index]?.p?.b ?? []),
-        }
-        if(["P_Merge", "P_Rainbow", "P_Heart"].includes(logInfo?.logName))
+        };
+        if (["P_Merge", "P_Rainbow", "P_Heart"].includes(logInfo?.logName))
             Object.assign(logInfo.logObj, {
                 outputPet: logPetInfo,
-            })
-        else if (logInfo?.logName)
-            Object.assign(logInfo.logObj, logPetInfo);
-		if(logInfo?.logName) utils.logP12Info(logInfo.logName, logInfo.logObj)
+            });
+        else if (logInfo?.logName) Object.assign(logInfo.logObj, logPetInfo);
+        if (logInfo?.logName) utils.logP12Info(logInfo.logName, logInfo.logObj);
 
-		this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
-        const userId = Player.getPlayer(playerID)?.userId ?? '';
-        if(SystemUtil.isServer()) ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
+        this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
+        const userId = Player.getPlayer(playerID)?.userId ?? "";
+        if (SystemUtil.isServer()) ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
         this.save(true);
         this.BagItemChangeAC.call(true, [index]);
         return true;
     }
 
-    public batchAddBagItem(playerID: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", infos: {id: number, atk: number, name: string, addTime: number | undefined}[], logInfo?: { logObj: Object, logName: string }): boolean {
-        if(!infos?.length) return false;
+    public batchAddBagItem(
+        playerID: number,
+        creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化",
+        infos: { id: number; atk: number; name: string; addTime: number | undefined }[],
+        logInfo?: { logObj: Object; logName: string }
+    ): boolean {
+        if (!infos?.length) return false;
         if (this.CurBagCapacity + infos.length > this.BagCapacity) {
             return false;
         }
         const keys = [];
-        const userId = Player.getPlayer(playerID)?.userId ?? '';
+        const userId = Player.getPlayer(playerID)?.userId ?? "";
         const pets: petItemDataNew[] = [];
-        for(let i = 0; i < infos.length; i++) {
+        for (let i = 0; i < infos.length; i++) {
             this.newPetKey++;
             let index = this.newPetKey;
             const { id, atk, name, addTime } = infos[i];
@@ -518,10 +567,9 @@ export class PetBagModuleData extends Subdata {
             pets.push(this.bagContainerNew[index]);
             this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
             ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
-
         }
-        if(logInfo?.logName) {
-            const hatchPets = pets.map(p => ({
+        if (logInfo?.logName) {
+            const hatchPets = pets.map((p) => ({
                 petKey: p?.k,
                 petId: p?.I,
                 petAtk: p?.p?.a,
@@ -532,14 +580,13 @@ export class PetBagModuleData extends Subdata {
                 timestamp: Date.now(),
                 userId,
                 hatchPets,
-            });  
-            utils.logP12Info(logInfo.logName, logInfo.logObj)
+            });
+            utils.logP12Info(logInfo.logName, logInfo.logObj);
         }
         this.save(true);
         this.BagItemChangeAC.call(true, keys);
         return true;
     }
-
 
     public getPetEnchantScore(enchantIds: number[]): number {
         if (!enchantIds?.length) return 0;
@@ -560,17 +607,13 @@ export class PetBagModuleData extends Subdata {
         for (let key in this.bagContainerNew) {
             //筛出这个赛季获取的
             const curPet = this.bagContainerNew[key];
-            if (
-                this.calRound(curPet.obtainTime) === currRound &&
-                curPet.p.a >= maxAttack
-            ) {
+            if (this.calRound(curPet.obtainTime) === currRound && curPet.p.a >= maxAttack) {
                 const prePet = petKey ? this.bagContainerNew[petKey] : null;
                 // 相同 atk 则看附魔分数
                 if (
                     curPet.p.a === maxAttack &&
                     prePet &&
-                    this.getPetEnchantScore(curPet.p.b) <=
-                    this.getPetEnchantScore(prePet.p.b)
+                    this.getPetEnchantScore(curPet.p.b) <= this.getPetEnchantScore(prePet.p.b)
                 )
                     continue;
                 maxAttack = curPet.p.a;
@@ -593,18 +636,18 @@ export class PetBagModuleData extends Subdata {
         this.newPetKey++;
         let index = this.newPetKey;
         this.bagContainerNew[index] = petData;
-		this.updatePetStatistic(this.bagContainerNew[index]);
+        this.updatePetStatistic(this.bagContainerNew[index]);
 
         return true;
     }
 
     /**删除元素 */
     public removeBagItem(playerId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
-        if(SystemUtil.isServer()) {
+        if (SystemUtil.isServer()) {
             const userId = Player.getPlayer(playerId).userId;
             const delPets = [];
-            keys.forEach( (key) => {
-                const petItem = {...this.bagContainerNew[key]};
+            keys.forEach((key) => {
+                const petItem = { ...this.bagContainerNew[key] };
                 // this.updatePetStatistic(petItem, "destroyed", true, { desSource });
                 delPets.push(petItem);
                 delete this.bagContainerNew[key];
@@ -633,13 +676,12 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.bornRandomEnchant(this.bagContainerNew[index], type);
-		this.updatePetStatistic(this.bagContainerNew[index]);
+        this.updatePetStatistic(this.bagContainerNew[index]);
         return true;
     }
 
     /**返回第一个空的索引，否则返回-1 */
     private getFirstEmptyIndex(): number {
-
         return this.newPetKey;
     }
 
@@ -683,7 +725,6 @@ export class PetBagModuleData extends Subdata {
             return index_2 - index_1;
         });
         return arr;
-
     }
 
     /**战力排序 */
@@ -700,9 +741,7 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**初始化宠物 */
-    private initPet() {
-
-    }
+    private initPet() {}
 
     /**添加背包容量 */
     public addCapacity(count: number) {
@@ -789,8 +828,8 @@ export class PetBagModuleData extends Subdata {
             return false;
         }
         petData.p.n = name;
-		
-		this.updatePetStatistic(this.bagContainerNew[key]);
+
+        this.updatePetStatistic(this.bagContainerNew[key]);
         this.save(true);
         return true;
     }
@@ -812,9 +851,9 @@ export class PetBagModuleData extends Subdata {
         let item = this.bagItemsByKey(key);
         item.p.b.length = 0;
         item.p.b = ids;
-        item.enchantCnt++; 		// 已附魔次数++
-		this.updatePetStatistic(item);
-		this.save(true);
+        item.enchantCnt++; // 已附魔次数++
+        this.updatePetStatistic(item);
+        this.save(true);
     }
 
     // 按照配置的 Weight 随机返回一个附魔词条id，
@@ -856,7 +895,10 @@ export class PetBagModuleData extends Subdata {
         }
 
         const random = Math.random() * totalWeight;
-        Log4Ts.log(PetBagModuleData, `PetBagModuleData randomEnchant - type:${type}, excludeIds:${excludeIds}, random:${random}, totalWeight:${totalWeight}`);
+        Log4Ts.log(
+            PetBagModuleData,
+            `PetBagModuleData randomEnchant - type:${type}, excludeIds:${excludeIds}, random:${random}, totalWeight:${totalWeight}`
+        );
         let probability = 0;
         for (let i = 0; i < idArr.length; i++) {
             probability += weightArr[i];
@@ -882,10 +924,8 @@ export class PetBagModuleData extends Subdata {
 
         if (type == quality.Myth) {
             let thirdBuffId = 0; // 该词条为神话特有的第三条词条 不可重铸
-            if (enchantData.bestPets.includes(petItem.I))
-                thirdBuffId = enchantData.bestEnchantId; // 46词条
-            else
-                thirdBuffId = this.randomEnchant("special"); // 或者 可附魔出的特殊词条
+            if (enchantData.bestPets.includes(petItem.I)) thirdBuffId = enchantData.bestEnchantId; // 46词条
+            else thirdBuffId = this.randomEnchant("special"); // 或者 可附魔出的特殊词条
             buff.push(thirdBuffId);
         }
         petItem.p.b = buff;

@@ -603,7 +603,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         const data = this.currentData;
         if (!data) return false;
-        data.clearFuseTodayIfNewDay();
+        data.clearFuseTodayIfNewDay({ userId: userId });
         let fuseNumToday = data?.fuseNumToday ?? 0;
         const cost = utils.fuseCostCompute(fuseNumToday);
         console.log("#time net_fusePet cost:" + cost + "  fuseNumToday:" + fuseNumToday);
@@ -1115,6 +1115,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     public net_clearFuseTodayIfNewDay() {
         const playerId = this.currentPlayerId;
-        DataCenterS.getData(playerId, PetBagModuleData)?.clearFuseTodayIfNewDay();
+        const player = Player.getPlayer(playerId);
+        DataCenterS.getData(playerId, PetBagModuleData)?.clearFuseTodayIfNewDay({ userId: player.userId });
     }
 }
