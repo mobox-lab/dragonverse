@@ -6,7 +6,6 @@ import Log4Ts from "mw-log4ts";
 import GameServiceConfig from "../const/GameServiceConfig";
 
 export class utils {
-
     /**当前帧数 */
     public static frameCount: number = 0;
 
@@ -14,25 +13,23 @@ export class utils {
     public static showUITween(ui: mw.UIScript, posY?: number, duration: number = 100, callBack?: Function) {
         let pos: mw.Vector2 = mw.Vector2.zero;
 
-        posY = posY ? posY : mw.getViewportSize().y / 10;//视口大小
+        posY = posY ? posY : mw.getViewportSize().y / 10; //视口大小
 
-        new mw.Tween({y: posY})
+        new mw.Tween({ y: posY })
 
-            .to({y: 0})
+            .to({ y: 0 })
 
             .duration(duration)
 
-            .onUpdate(val => {
-
+            .onUpdate((val) => {
                 pos.set(0, val.y);
 
                 ui.uiObject.position = pos;
-
             })
 
             // .interpolation(TweenUtil.Interpolation.Bezier)
 
-            .easing(TweenUtil.Easing.Cubic.Out)//TweenUtil.Easing.Elastic.Out   TweenUtil.Easing.Cubic.Out
+            .easing(TweenUtil.Easing.Cubic.Out) //TweenUtil.Easing.Elastic.Out   TweenUtil.Easing.Cubic.Out
 
             .start()
 
@@ -45,20 +42,20 @@ export class utils {
 
     public static throttle(fn: Function, time = 500) {
         let timer = null;
-        return function() {
-            if(!timer) {
+        return function () {
+            if (!timer) {
                 fn.apply(this, arguments);
                 timer = setTimeout(() => {
                     timer = null;
                 }, time);
             }
-        }
-    } 
+        };
+    }
 
     public static debounce(fn: Function, wait: number = 500) {
         let timer = null;
-        return function(){
-            if(timer) clearTimeout(timer);
+        return function () {
+            if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
                 fn.apply(this, arguments);
             }, wait);
@@ -69,9 +66,9 @@ export class utils {
     public static logP12Info(name: string, info: any, type?: "error" | "info" | "warn"): void {
         const announcer = { name };
         const msg = JSON.stringify(info) + " #P12";
-        if(type == "error"){
+        if (type == "error") {
             Log4Ts.error(announcer, msg);
-        } else if(type == "warn"){
+        } else if (type == "warn") {
             Log4Ts.warn(announcer, msg);
         } else {
             Log4Ts.log(announcer, msg);
@@ -80,16 +77,22 @@ export class utils {
 
     /** 计算合成所需花费，参数为今日已合成过的次数 */
     public static fuseCostCompute(fusedNum: number) {
-        //   第1-10次： 5000
-        //   第11-500次： 5000+(n-10)*1000
-        //   第501次-无穷： 495000*(1.2^(n-500))
-        const pow = 500;
-        if(fusedNum < 10) {
+        // 第1-10次： 5000
+        // 第11-100次：5000+(n-10)1000
+        // 第101-200次：5000+(n-10)1500
+        // 第201-320次：5000+(n-10)2000
+        // 第321次-无穷： 623000(1.15^(n-320))
+        const pow = 320;
+        if (fusedNum < 10) {
             return 5000;
-        } else if(fusedNum < pow) {
+        } else if (fusedNum < 100) {
             return 5000 + (fusedNum + 1 - 10) * 1000;
+        } else if (fusedNum < 200) {
+            return 5000 + (fusedNum + 1 - 10) * 1500;
+        } else if (fusedNum < pow) {
+            return 5000 + (fusedNum + 1 - 10) * 2000;
         } else {
-            return Math.floor(495000 * Math.pow(1.2, (fusedNum + 1) - pow));
+            return Math.floor(623000 * Math.pow(1.15, fusedNum + 1 - pow));
         }
     }
 
@@ -102,12 +105,12 @@ export class utils {
     public static GetRandomNum(min: number, max: number): number {
         let Range = max - min;
         let Rand = Math.random();
-        return (min + Math.round(Rand * Range));
+        return min + Math.round(Rand * Range);
     }
 
     /**显影该物体所有子节点除了某命名 */
     public static showAllChildExcept(node: mw.GameObject, isShow: boolean, exceptName: string = ""): void {
-        node.getChildren().forEach(child => {
+        node.getChildren().forEach((child) => {
             if (child.name != exceptName) {
                 child.setVisibility(isShow ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
             }
@@ -118,9 +121,15 @@ export class utils {
     /**除了命名为"attack"，其他所有子节点加描边 */
     public static addOutlineExcept(node: mw.GameObject, isAdd: boolean, exceptName: string = "attack"): void {
         let pet = GlobalData.PetStroke;
-        node.getChildren().forEach(child => {
+        node.getChildren().forEach((child) => {
             if (child.name != exceptName) {
-                GeneralManager.modifyaddOutlineEffect(child, pet.strokeColor, pet.strokeWidth, pet.strokeDepthBias, pet.strokeRange);
+                GeneralManager.modifyaddOutlineEffect(
+                    child,
+                    pet.strokeColor,
+                    pet.strokeWidth,
+                    pet.strokeDepthBias,
+                    pet.strokeRange
+                );
             }
             this.addOutlineExcept(child, isAdd, exceptName);
         });
@@ -128,7 +137,7 @@ export class utils {
 
     /**所有子节点设置裁剪距离 */
     public static setClipDistance(node: mw.GameObject, distance: number): void {
-        node.getChildren().forEach(child => {
+        node.getChildren().forEach((child) => {
             if (child instanceof mw.Model) {
                 child.setCullDistance(distance);
             }
@@ -179,33 +188,32 @@ export class utils {
             return false;
         }
 
-        let cross = 0;  // 目标点向右划线与多边形相交次数
+        let cross = 0; // 目标点向右划线与多边形相交次数
         for (let index = 0; index < points.length; index++) {
             let p1 = points[index];
-            let p2 = points[(index + 1) % points.length];   // 两个点组成一条边
+            let p2 = points[(index + 1) % points.length]; // 两个点组成一条边
 
             if (p1.y == p2.y) {
-                continue;   // 边是水平的，跳过
+                continue; // 边是水平的，跳过
             }
 
             if (point.y < Math.min(p1.y, p2.y)) {
-                continue;   // 如果目标点低于组成的边
+                continue; // 如果目标点低于组成的边
             }
 
             if (point.y > Math.max(p1.y, p2.y)) {
-                continue;   // 目标点高于组成的边
+                continue; // 目标点高于组成的边
             }
 
             // 如果p1画水平线，过p2画水平线，目标点在这两个水平线之间
-            let x = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+            let x = ((point.y - p1.y) * (p2.x - p1.x)) / (p2.y - p1.y) + p1.x;
             // 几何意义：过目标点，画一条线，x是这条线与多边形当前边的交点x坐标
             if (x > point.x) {
                 cross++;
             }
         }
 
-        return cross % 2 == 1;  // 如果交点个数是奇数在多边形内。
-
+        return cross % 2 == 1; // 如果交点个数是奇数在多边形内。
     }
 
     /**检测一个点是否在长方体内*/
@@ -238,7 +246,7 @@ export class utils {
     public static formatTime(second: number): string {
         let t_sec = Math.floor(second % 60);
         let t_time = Math.floor(second / 60);
-        let t_minu = Math.floor(t_time % 60);    // 分钟数
+        let t_minu = Math.floor(t_time % 60); // 分钟数
         let leftTime: string = t_minu.toString();
         if (t_minu <= 9) {
             leftTime = "0" + t_minu;
@@ -259,8 +267,8 @@ export class utils {
 
     /**关开BGM */
     public static setBGM(isPlay: boolean) {
-        isPlay ? mw.SoundService.BGMVolumeScale = 1 : mw.SoundService.BGMVolumeScale = 0;
-        isPlay ? mw.SoundService.volumeScale = 1 : mw.SoundService.volumeScale = 0;
+        isPlay ? (mw.SoundService.BGMVolumeScale = 1) : (mw.SoundService.BGMVolumeScale = 0);
+        isPlay ? (mw.SoundService.volumeScale = 1) : (mw.SoundService.volumeScale = 0);
     }
 
     /**获取今天日期 转为number */
@@ -386,14 +394,12 @@ export class utils {
         return array[index];
     }
 
-    public static setEffect() {
-
-    }
+    public static setEffect() {}
 
     public static triInit(guid: string, enterCB: Function, leaveCB: Function): void {
-        GameObject.asyncFindGameObjectById(guid).then(obj => {
+        GameObject.asyncFindGameObjectById(guid).then((obj) => {
             let trigger = obj as mw.Trigger;
-            trigger.onEnter.add(other => {
+            trigger.onEnter.add((other) => {
                 if (other == Player.localPlayer.character) {
                     enterCB();
                     KeyOperationManager.getInstance().onKeyDown(null, Keys.F, () => {
@@ -402,7 +408,7 @@ export class utils {
                     });
                 }
             });
-            trigger.onLeave.add(other => {
+            trigger.onLeave.add((other) => {
                 if (other == Player.localPlayer.character) {
                     leaveCB();
                     KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
@@ -430,7 +436,7 @@ export class utils {
     }
 
     public static isPremiumMemberSupported(): Promise<boolean> {
-        return new Promise<boolean>(resovle => {
+        return new Promise<boolean>((resovle) => {
             PurchaseService.isPremiumMemberSupported((isSupport) => {
                 resovle(isSupport);
             });
@@ -438,7 +444,7 @@ export class utils {
     }
 
     public static isPremiumMember(): Promise<boolean> {
-        return new Promise<boolean>(resovle => {
+        return new Promise<boolean>((resovle) => {
             PurchaseService.isPremiumMember((result) => {
                 resovle(result);
             });
@@ -453,55 +459,74 @@ export class utils {
 
 /**彩虹颜色 */
 export class ImgColorTween {
-
     private startSRBG2 = mw.LinearColor.colorHexToLinearColor("#111236"); //颜色3
     private endSRGB2 = mw.LinearColor.colorHexToLinearColor("#FF0055");
-    private tween2: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-    ({x: this.startSRBG2.r, y: this.startSRBG2.g, z: this.startSRBG2.b}).to({
-        x: this.endSRGB2.r,
-        y: this.endSRGB2.g,
-        z: this.endSRGB2.b,
-    }, 800)
+    private tween2: mw.Tween<{ x: number; y: number; z: number }> = new mw.Tween({
+        x: this.startSRBG2.r,
+        y: this.startSRBG2.g,
+        z: this.startSRBG2.b,
+    })
+        .to(
+            {
+                x: this.endSRGB2.r,
+                y: this.endSRGB2.g,
+                z: this.endSRGB2.b,
+            },
+            800
+        )
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
-            sRGBColor.r = Number((v.x));
-            sRGBColor.g = Number((v.y));
-            sRGBColor.b = Number((v.z));
-            (this.petImg).imageColor = sRGBColor;
+            sRGBColor.r = Number(v.x);
+            sRGBColor.g = Number(v.y);
+            sRGBColor.b = Number(v.z);
+            this.petImg.imageColor = sRGBColor;
+        })
+        .start();
 
-        }).start();
-
-    private startSRBG1 = mw.LinearColor.colorHexToLinearColor("#E89839");  //颜色2
+    private startSRBG1 = mw.LinearColor.colorHexToLinearColor("#E89839"); //颜色2
     private endSRGB1 = mw.LinearColor.colorHexToLinearColor("#111236");
-    private tween1: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-    ({x: this.startSRBG1.r, y: this.startSRBG1.g, z: this.startSRBG1.b}).to({
-        x: this.endSRGB1.r,
-        y: this.endSRGB1.g,
-        z: this.endSRGB1.b,
-    }, 800)
+    private tween1: mw.Tween<{ x: number; y: number; z: number }> = new mw.Tween({
+        x: this.startSRBG1.r,
+        y: this.startSRBG1.g,
+        z: this.startSRBG1.b,
+    })
+        .to(
+            {
+                x: this.endSRGB1.r,
+                y: this.endSRGB1.g,
+                z: this.endSRGB1.b,
+            },
+            800
+        )
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
-            sRGBColor.r = Number((v.x));
-            sRGBColor.g = Number((v.y));
-            sRGBColor.b = Number((v.z));
-            (this.petImg).imageColor = sRGBColor;
-        }).start();
+            sRGBColor.r = Number(v.x);
+            sRGBColor.g = Number(v.y);
+            sRGBColor.b = Number(v.z);
+            this.petImg.imageColor = sRGBColor;
+        })
+        .start();
 
-    private startSRBG = mw.LinearColor.colorHexToLinearColor("#FF0055");  //颜色1
+    private startSRBG = mw.LinearColor.colorHexToLinearColor("#FF0055"); //颜色1
     private endSRGB = mw.LinearColor.colorHexToLinearColor("#E89839");
 
-    private tween = new mw.Tween({x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b}).to({
-        x: this.endSRGB.r,
-        y: this.endSRGB.g,
-        z: this.endSRGB.b,
-    }, 800)
+    private tween = new mw.Tween({ x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b })
+        .to(
+            {
+                x: this.endSRGB.r,
+                y: this.endSRGB.g,
+                z: this.endSRGB.b,
+            },
+            800
+        )
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
-            sRGBColor.r = Number((v.x));
-            sRGBColor.g = Number((v.y));
-            sRGBColor.b = Number((v.z));
+            sRGBColor.r = Number(v.x);
+            sRGBColor.g = Number(v.y);
+            sRGBColor.b = Number(v.z);
             this.petImg.imageColor = sRGBColor;
-        }).start();
+        })
+        .start();
 
     private petImg: mw.Image;
 
@@ -517,19 +542,15 @@ export class ImgColorTween {
         if (isPlay) {
             this.imgColorTween();
         } else {
-            if (this.tween?.isPlaying())
-                this.tween.stop();
-            if (this.tween1?.isPlaying())
-                this.tween1.stop();
-            if (this.tween2?.isPlaying())
-                this.tween2.stop();
+            if (this.tween?.isPlaying()) this.tween.stop();
+            if (this.tween1?.isPlaying()) this.tween1.stop();
+            if (this.tween2?.isPlaying()) this.tween2.stop();
         }
     }
 
     private imgColorTween() {
         this.tween.start();
     }
-
 }
 
 export function tmonday(dtm): string {
@@ -545,7 +566,6 @@ export function tmonday(dtm): string {
 
 /**贝塞尔曲线 */
 export class bezierCurve {
-
     public static getPoints(startP: mw.Vector, ctrlPoint: mw.Vector, endPos: mw.Vector, pointCount: number = 100) {
         let pointArr: mw.Vector[] = [];
         for (let i = 0; i < pointCount; i++) {
@@ -560,7 +580,11 @@ export class bezierCurve {
         return pointArr;
     }
 
-    public static vectorLerp(v1: mw.Vector | mw.Vector2, v2: mw.Vector | mw.Vector2, lerp: number): mw.Vector | mw.Vector2 {
+    public static vectorLerp(
+        v1: mw.Vector | mw.Vector2,
+        v2: mw.Vector | mw.Vector2,
+        lerp: number
+    ): mw.Vector | mw.Vector2 {
         let x = 0;
         let y = 0;
         let z = null;
@@ -573,10 +597,8 @@ export class bezierCurve {
     }
 
     public static numLerp(a: number, b: number, lerp: number): number {
-        if (lerp < 0)
-            lerp = 0;
-        if (lerp > 1)
-            lerp = 1;
+        if (lerp < 0) lerp = 0;
+        if (lerp > 1) lerp = 1;
         return a + (b - a) * lerp;
     }
 }
@@ -585,7 +607,7 @@ export class bezierCurve {
 const SINGLETON_KEY = Symbol();
 
 export function Singleton() {
-    return function (type: { new(), instance: any }) {
+    return function (type: { new (); instance: any }) {
         const proxyType = new Proxy(type, {
             // this will hijack the constructor
             construct(target, argsList, newTarget) {
@@ -599,7 +621,6 @@ export function Singleton() {
                 }
                 return target[SINGLETON_KEY];
             },
-
         });
         Reflect.defineProperty(proxyType, "instance", {
             get() {
@@ -647,17 +668,16 @@ export function buffToString(id: number, level: number): string {
 }
 
 /**把 id_level; 转换为 词条 */
-export function stringToBuff(str: string): { id: number, level: number }[] {
+export function stringToBuff(str: string): { id: number; level: number }[] {
     let arr = str.split(";");
-    let buff: { id: number, level: number }[] = [];
-    arr.forEach(element => {
+    let buff: { id: number; level: number }[] = [];
+    arr.forEach((element) => {
         if (element == "") return;
         let item = element.split("_");
         let id = Number(item[0]);
         let level = Number(item[1]);
-        buff.push({id: id, level: level});
+        buff.push({ id: id, level: level });
     });
 
     return buff;
 }
-
